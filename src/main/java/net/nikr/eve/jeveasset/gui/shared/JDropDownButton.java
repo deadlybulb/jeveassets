@@ -40,10 +40,9 @@ public class JDropDownButton extends JButton implements PopupMenuListener, Mouse
 	private boolean showPopupMenuKey = true;
 	private boolean mouseOverThis = false;
 	private boolean mousePressedThis = false;
-	//private JButton jButton;
 	private int popupHorizontalAlignment;
 	private int popupVerticalAlignment;
-	private JPopupMenu jPopupMenu;
+	protected JPopupMenu jPopupMenu;
 
 	public JDropDownButton() {
 		this("", null, LEFT, BOTTOM);
@@ -122,7 +121,7 @@ public class JDropDownButton extends JButton implements PopupMenuListener, Mouse
 		this.popupVerticalAlignment = popupVerticalAlignment;
 	}
 
-	private void showPopupMenu(){
+	protected void showPopupMenu(){
 		int verticalPosition = this.getHeight();
 		int horizontalPosition = 0;
 		Dimension popupMenuSize = jPopupMenu.getPreferredSize();

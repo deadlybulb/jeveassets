@@ -32,13 +32,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -49,41 +44,30 @@ import net.nikr.eve.jeveasset.data.MarketOrder;
 import net.nikr.eve.jeveasset.gui.images.Images;
 import net.nikr.eve.jeveasset.gui.shared.JMainTab;
 import net.nikr.eve.jeveasset.gui.shared.JAutoColumnTable;
+import net.nikr.eve.jeveasset.gui.shared.JFilterButton;
 import net.nikr.eve.jeveasset.gui.shared.JMenuTools;
 import net.nikr.eve.jeveasset.io.shared.ApiConverter;
 
 
 public class MarketOrdersTab extends JMainTab implements ActionListener, MouseListener {
 
-	private final static String ACTION_SELECTED = "ACTION_SELECTED";
-	
-	
-	private JComboBox jCharacters;
-	private JComboBox jState;
+	private JFilterButton jCharacters;
+	private JFilterButton jState;
 	private EventTableModel<MarketOrder> sellOrdersTableModel;
 	private EventTableModel<MarketOrder> buyOrdersTableModel;
 	private EventList<MarketOrder> sellOrdersEventList;
 	private EventList<MarketOrder> buyOrdersEventList;
 
-	private List<MarketOrder> all;
-	private Map<String, List<MarketOrder>> orders;
-	private Vector<String> characters;
-
 	private JAutoColumnTable jSellOrders;
 	private JAutoColumnTable jBuyOrders;
 
-	private String[] orderStates = new String[]{"All", "Active", "Fulfilled", "Partially Fulfilled", "Expired", "Closed", "Cancelled", "Pending"};
+	private String[] orderStates = new String[]{"Active", "Fulfilled", "Partially Fulfilled", "Expired", "Closed", "Cancelled", "Pending"};
 
 	public MarketOrdersTab(Program program) {
 		super(program, "Market Orders", Images.ICON_TOOL_MARKET_ORDERS, true);
 
-		jCharacters = new JComboBox();
-		jCharacters.setActionCommand(ACTION_SELECTED);
-		jCharacters.addActionListener(this);
-
-		jState = new JComboBox();
-		jState.setActionCommand(ACTION_SELECTED);
-		jState.addActionListener(this);
+		jCharacters = new JFilterButton("Characters", this);
+		jState = new JFilterButton("States", this);
 
 		//Table format
 		MarketOrderTableFormat sellTableFormat = new MarketOrderTableFormat();
@@ -106,8 +90,6 @@ public class MarketOrdersTab extends JMainTab implements ActionListener, MouseLi
 		TableComparatorChooser.install(jSellOrders, sellOrdersSortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, sellTableFormat);
 		TableComparatorChooser.install(jBuyOrders, buyOrdersSortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, buyTableFormat);
 		//Labels
-		JLabel jCharactersLabel = new JLabel("Character");
-		JLabel jStateLabel = new JLabel("State");
 		JLabel jSellLabel = new JLabel("Sell Orders");
 		JLabel jBuyLabel = new JLabel("Buy Orders");
 		//Scroll Panels
@@ -117,17 +99,14 @@ public class MarketOrdersTab extends JMainTab implements ActionListener, MouseLi
 		layout.setHorizontalGroup(
 			layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup()
-					.addComponent(jCharactersLabel)
 					.addComponent(jSellLabel)
 					.addComponent(jBuyLabel)
 				)
 				.addGroup(layout.createParallelGroup()
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addGroup(layout.createSequentialGroup()
-							.addComponent(jCharacters, 200, 200, 200)
-							.addGap(100)
-							.addComponent(jStateLabel)
-							.addComponent(jState, 200, 200, 200)
+							.addComponent(jCharacters, Program.BUTTONS_WIDTH, Program.BUTTONS_WIDTH, Program.BUTTONS_WIDTH)
+							.addComponent(jState, Program.BUTTONS_WIDTH, Program.BUTTONS_WIDTH, Program.BUTTONS_WIDTH)
 						)
 						.addComponent(jSellOrdersScrollPanel, 0, 0, Short.MAX_VALUE)
 					)
@@ -137,9 +116,7 @@ public class MarketOrdersTab extends JMainTab implements ActionListener, MouseLi
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
 				.addGroup(layout.createParallelGroup()
-					.addComponent(jCharactersLabel, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT)
 					.addComponent(jCharacters, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT)
-					.addComponent(jStateLabel, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT)
 					.addComponent(jState, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT, Program.BUTTONS_HEIGHT)
 				)
 				.addGroup(layout.createParallelGroup()
@@ -178,30 +155,17 @@ public class MarketOrdersTab extends JMainTab implements ActionListener, MouseLi
 
 	@Override
 	public void updateData() {
-		characters = new Vector<String>();
-		orders = new HashMap<String, List<MarketOrder>>();
-		all = new ArrayList<MarketOrder>();
+		List<String> characters = new ArrayList<String>();
 		List<Account> accounts = program.getSettings().getAccounts();
-		for (int a = 0; a < accounts.size(); a++){
-			List<Human> tempHumans = accounts.get(a).getHumans();
-			for (int b = 0; b < tempHumans.size(); b++){
-				Human human = tempHumans.get(b);
-				List<MarketOrder> marketOrders = new ArrayList<MarketOrder>();
-				orders.put(human.getName(), marketOrders);
+		for (Account account : accounts){
+			for (Human human : account.getHumans()){
 				if (human.isShowAssets()){
 					characters.add(human.getName());
-					List<MarketOrder> characterMarketOrders = ApiConverter.apiMarketOrdersToMarketOrders(human.getMarketOrders(), program.getSettings());
-					orders.put(human.getName(), characterMarketOrders);
-					all.addAll(characterMarketOrders);
 					if (human.isUpdateCorporationAssets()){
 						String corpKey = "["+human.getCorporation()+"]";
 						if (!characters.contains(corpKey)){
 							characters.add(corpKey);
-							orders.put(corpKey, new ArrayList<MarketOrder>());
 						}
-						List<MarketOrder> corporationMarketOrders = ApiConverter.apiMarketOrdersToMarketOrders(human.getMarketOrdersCorporation(), program.getSettings());
-						orders.get(corpKey).addAll(corporationMarketOrders);
-						all.addAll(corporationMarketOrders);
 					}
 				}
 			}
@@ -212,80 +176,76 @@ public class MarketOrdersTab extends JMainTab implements ActionListener, MouseLi
 			jSellOrders.setEnabled(true);
 			jBuyOrders.setEnabled(true);
 			Collections.sort(characters);
-			characters.add(0, "All");
-			jCharacters.setModel( new DefaultComboBoxModel(characters));
-			jState.setModel( new DefaultComboBoxModel(orderStates));
-			jCharacters.setSelectedIndex(0);
-			jState.setSelectedIndex(0);
+			jCharacters.setData(characters, true);
+			jState.setData(orderStates, true);
+			jCharacters.setEnabled(true);
+			jState.setEnabled(true);
 		} else {
 			jCharacters.setEnabled(false);
 			jState.setEnabled(false);
 			jSellOrders.setEnabled(false);
 			jBuyOrders.setEnabled(false);
-			jCharacters.setModel( new DefaultComboBoxModel());
-			jCharacters.getModel().setSelectedItem("No character found");
-			jState.setModel( new DefaultComboBoxModel());
-			jState.getModel().setSelectedItem("No character found");
+			jCharacters.setEnabled(false);
+			jState.setEnabled(false);
 			sellOrdersEventList.clear();
 			buyOrdersEventList.clear();
 		}
-		
+		updateList();
+	}
+
+	private void updateList(){
+		List<String> states = jState.getData();
+		List<String> characters = jCharacters.getData();
+		List<MarketOrder> sellOrders = new ArrayList<MarketOrder>();
+		List<MarketOrder> buyOrders = new ArrayList<MarketOrder>();
+
+		List<Account> accounts = program.getSettings().getAccounts();
+		for (Account account : accounts){
+			for (Human human : account.getHumans()){
+				if (human.isShowAssets()){
+					if (characters.contains(human.getName())){
+						List<MarketOrder> characterMarketOrders = ApiConverter.apiMarketOrdersToMarketOrders(human.getMarketOrders(), program.getSettings());
+						for (MarketOrder marketOrder : characterMarketOrders){
+							if (states.contains(marketOrder.getStatus())){
+								if (marketOrder.getBid() < 1){
+									sellOrders.add(marketOrder);
+								} else {
+									buyOrders.add(marketOrder);
+								}
+							}
+						}
+					}
+					String corpKey = "["+human.getCorporation()+"]";
+					if (human.isUpdateCorporationAssets() && characters.contains(corpKey)){
+						List<MarketOrder> corporationMarketOrders = ApiConverter.apiMarketOrdersToMarketOrders(human.getMarketOrdersCorporation(), program.getSettings());
+						for (MarketOrder marketOrder : corporationMarketOrders){
+							if (states.contains(marketOrder.getStatus())){
+								if (marketOrder.getBid() < 1){
+									sellOrders.add(marketOrder);
+								} else {
+									buyOrders.add(marketOrder);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		sellOrdersEventList.getReadWriteLock().writeLock().lock();
+		sellOrdersEventList.clear();
+		sellOrdersEventList.addAll( sellOrders );
+		sellOrdersEventList.getReadWriteLock().writeLock().unlock();
+
+		buyOrdersEventList.getReadWriteLock().writeLock().lock();
+		buyOrdersEventList.clear();
+		buyOrdersEventList.addAll( buyOrders );
+		buyOrdersEventList.getReadWriteLock().writeLock().unlock();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (ACTION_SELECTED.equals(e.getActionCommand())) {
-			String selected = (String) jCharacters.getSelectedItem();
-			if (characters.size() > 1){
-				List<MarketOrder> marketOrders;
-				List<MarketOrder> sellMarketOrders = new ArrayList<MarketOrder>();
-				List<MarketOrder> buyMarketOrders = new ArrayList<MarketOrder>();
-				if (selected.equals("All")){
-					marketOrders = all;
-				} else {
-					marketOrders = orders.get(selected);
-				}
-				String sState = (String) jState.getSelectedItem();
-				int state = 0;
-				if (sState.equals("All")) state = -1;
-				if (sState.equals("Active")) state = 0;
-				if (sState.equals("Closed")) state = 1;
-				if (sState.equals("Expired") 
-						|| sState.equals("Fulfilled")
-						|| sState.equals("Partially Fulfilled")) state = 2;
-				if (sState.equals("Cancelled")) state = 3;
-				if (sState.equals("Pending")) state = 4;
-				for (int a = 0; a < marketOrders.size(); a++){
-					MarketOrder marketOrder = marketOrders.get(a);
-					if (marketOrder.getOrderState() == state || state < 0){
-						boolean add = true;
-						if (state == 2){
-							add = false;
-							if (sState.equals("Expired") && marketOrder.getStatus().equals("Expired")){
-								add = true;
-							}
-							if (sState.equals("Fulfilled") && marketOrder.getStatus().equals("Fulfilled")){
-								add = true;
-							}
-							if (sState.equals("Partially Fulfilled") && marketOrder.getStatus().equals("Partially Fulfilled")){
-								add = true;
-							}
-						}
-						if (add){
-							if (marketOrder.getBid() < 1){
-								sellMarketOrders.add(marketOrder);
-							} else {
-								buyMarketOrders.add(marketOrder);
-							}
-						}
-					}
-
-				}
-				sellOrdersEventList.clear();
-				sellOrdersEventList.addAll( sellMarketOrders );
-				buyOrdersEventList.clear();
-				buyOrdersEventList.addAll( buyMarketOrders );
-			}
+		if (JFilterButton.ACTION_CHANGED.equals(e.getActionCommand())) {
+			updateList();
 		}
 	}
 

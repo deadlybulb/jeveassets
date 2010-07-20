@@ -63,6 +63,7 @@ public class TestApiConverter {
 		settings = null;
 	}
 
+	//TODO Make test for market orders as well (and maybe assets)
 	@Before
 	public void setUp() {
 		InputStream is = TestApiConverter.class.getResourceAsStream("jobs.xml");

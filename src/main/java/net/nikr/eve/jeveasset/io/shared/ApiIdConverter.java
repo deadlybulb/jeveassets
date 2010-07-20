@@ -403,7 +403,7 @@ public class ApiIdConverter {
 		}
 		return -1;
 	}
-	//PENDING Make Test for ApiIdConverter.solarSystem(...)
+	
 	public static String solarSystem(int locationID, EveAsset parentAsset, Map<Integer, ApiStation> conquerableStations, Map<Integer, Location> locations) {
 		Location location = null;
 		ApiStation apiStation = null;
