@@ -10,7 +10,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.plaf.basic.BasicTableUI;
@@ -19,6 +18,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableFormatAdaptor;
 
 /**
  * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
@@ -30,8 +30,8 @@ public class JSeparatorTable extends JAutoColumnTable {
     private TableCellEditor separatorEditor;
 
 	
-    public JSeparatorTable(EventTableModel tableModel) {
-        super(tableModel);
+    public JSeparatorTable(EventTableModel tableModel, EnumTableFormatAdaptor formatAdaptor) {
+        super(tableModel, formatAdaptor);
         setUI(new SpanTableUI());
 
         // use a toString() renderer for the separator

@@ -75,7 +75,7 @@ public class OverviewTab extends JMainTab implements ActionListener {
 
 	private EventList<Overview> overviewEventList;
 	private EventTableModel<Overview> overviewTableModel;
-	private EnumTableFormatAdaptor<OverviewTableFormat, Overview> overviewTableFormat;
+	private EnumTableFormatAdaptor<OverviewTableFormat, Overview> tableFormat;
 	private JOverviewTable jTable;
 	private JComboBox jViews;
 	private JComboBox jCharacters;
@@ -106,15 +106,15 @@ public class OverviewTab extends JMainTab implements ActionListener {
 		jSource.addActionListener(this);
 
 		//Table format
-		overviewTableFormat = new EnumTableFormatAdaptor<OverviewTableFormat, Overview>(OverviewTableFormat.class);
+		tableFormat = new EnumTableFormatAdaptor<OverviewTableFormat, Overview>(OverviewTableFormat.class);
 		//Backend
 		overviewEventList = new BasicEventList<Overview>();
 		//For soring the table
 		SortedList<Overview> overviewSortedList = new SortedList<Overview>(overviewEventList);
 		//Table Model
-		overviewTableModel = new EventTableModel<Overview>(overviewSortedList, overviewTableFormat);
+		overviewTableModel = new EventTableModel<Overview>(overviewSortedList, tableFormat);
 		//Tables
-		jTable = new JOverviewTable(overviewTableModel);
+		jTable = new JOverviewTable(overviewTableModel, tableFormat);
 		//Table Selection
 		EventSelectionModel<Overview> selectionModel = new EventSelectionModel<Overview>(overviewSortedList);
 		selectionModel.setSelectionMode(ListSelection.MULTIPLE_INTERVAL_SELECTION_DEFENSIVE);
@@ -122,7 +122,7 @@ public class OverviewTab extends JMainTab implements ActionListener {
 		//Listeners
 		installTableMenu(jTable);
 		//Sorters
-		TableComparatorChooser.install(jTable, overviewSortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, overviewTableFormat);
+		TableComparatorChooser.install(jTable, overviewSortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, tableFormat);
 		//Scroll Panels
 		JScrollPane jOverviewScrollPanel = jTable.getScrollPanel();
 
@@ -369,24 +369,24 @@ public class OverviewTab extends JMainTab implements ActionListener {
 		String view = (String) jViews.getSelectedItem();
 		String source = (String) jSource.getSelectedItem();
 		if (view.equals(TabsOverview.get().regions())){
-			overviewTableFormat.hideColumn(OverviewTableFormat.SYSTEM);
-			overviewTableFormat.hideColumn(OverviewTableFormat.REGION);
+			tableFormat.hideColumn(OverviewTableFormat.SYSTEM);
+			tableFormat.hideColumn(OverviewTableFormat.REGION);
 			overviewTableModel.fireTableStructureChanged();
 		}
 		if (view.equals(TabsOverview.get().systems())){
-			overviewTableFormat.hideColumn(OverviewTableFormat.SYSTEM);
-			overviewTableFormat.showColumn(OverviewTableFormat.REGION);
+			tableFormat.hideColumn(OverviewTableFormat.SYSTEM);
+			tableFormat.showColumn(OverviewTableFormat.REGION);
 			overviewTableModel.fireTableStructureChanged();
 			
 		}
 		if (view.equals(TabsOverview.get().stations())){
-			overviewTableFormat.showColumn(OverviewTableFormat.SYSTEM);
-			overviewTableFormat.showColumn(OverviewTableFormat.REGION);
+			tableFormat.showColumn(OverviewTableFormat.SYSTEM);
+			tableFormat.showColumn(OverviewTableFormat.REGION);
 			overviewTableModel.fireTableStructureChanged();
 		}
 		if (view.equals(TabsOverview.get().groups())){
-			overviewTableFormat.hideColumn(OverviewTableFormat.SYSTEM);
-			overviewTableFormat.hideColumn(OverviewTableFormat.REGION);
+			tableFormat.hideColumn(OverviewTableFormat.SYSTEM);
+			tableFormat.hideColumn(OverviewTableFormat.REGION);
 			overviewTableModel.fireTableStructureChanged();
 		}
 		overviewEventList.getReadWriteLock().writeLock().lock();

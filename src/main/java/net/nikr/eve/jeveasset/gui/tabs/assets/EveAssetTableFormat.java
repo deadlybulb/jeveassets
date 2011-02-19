@@ -21,115 +21,247 @@
 
 package net.nikr.eve.jeveasset.gui.tabs.assets;
 
-import ca.odell.glazedlists.gui.AdvancedTableFormat;
+import ca.odell.glazedlists.GlazedLists;
 import java.util.Comparator;
 import net.nikr.eve.jeveasset.data.EveAsset;
-import net.nikr.eve.jeveasset.data.Settings;
-import net.nikr.eve.jeveasset.gui.shared.TableComparators;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
+import net.nikr.eve.jeveasset.i18n.TabsAssets;
 
+public enum EveAssetTableFormat implements EnumTableColumn<EveAsset> {
+	NAME(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnName();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getName();
+		}
+	},
+	GROUP(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnGroup();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getGroup();
+		}
+	},
+	CATEGORY(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnCategory();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getCategory();
+		}
+	},
+	OWNER(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnOwner();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getOwner();
+		}
+	},
+	LOCATION(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnLocation();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getLocation();
+		}
+	},
+	SECURITY(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnSecurity();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getSecurity();
+		}
+	},
+	REGION(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnRegion();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getRegion();
+		}
+	},
+	CONTAINER(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnContainer();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getContainer();
+		}
+	},
+	FLAG(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnFlag();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getFlag();
+		}
+	},
+	PRICE(Double.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnPrice();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getPrice();
+		}
+	},
+	SELL_MIN(Double.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnSellMin();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getPriceSellMin();
+		}
+	},
+	BUY_MAX(Double.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnBuyMax();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getPriceBuyMax();
+		}
+	},
+	REPROCESSED(Double.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnReprocessed();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getPriceReprocessed();
+		}
+	},
+	BASE_PRICE(Double.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnBasePrice();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getPriceBase();
+		}
+	},
+	REPROCESSED_VALUE(Double.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnReprocessedValue();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getValueReprocessed();
+		}
+	},
+	VALUE(Double.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnValue();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getValue();
+		}
+	},
+	COUNT(Long.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnCount();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getCount();
+		}
+	},
+	TYPE_COUNT(Long.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnTypeCount();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getTypeCount();
+		}
+	},
+	META(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnMeta();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getMeta();
+		}
+	},
+	VOLUME(Float.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnVolume();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getVolume();
+		}
+	},
+	ITEM_ID(Long.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnItemID();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getItemID();
+		}
+	},
+	TYPE_ID(Integer.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsAssets.get().columnTypeID();
+		}
+		@Override
+		public Object getColumnValue(EveAsset from) {
+			return from.getTypeID();
+		}
+	},
+	;
 
-public class EveAssetTableFormat implements AdvancedTableFormat<EveAsset> {
-
-	private Settings settings;
-
-	/** Creates a new instance of PriceTableFormat */
-	public EveAssetTableFormat(Settings settings) {
-		super();
-		this.settings = settings;
+	Class type;
+	Comparator<?> comparator;
+	private EveAssetTableFormat(Class type, Comparator<?> comparator) {
+		this.type = type;
+		this.comparator = comparator;
 	}
-
 	@Override
-	public int getColumnCount() {
-		return settings.getAssetTableSettings().getTableColumnVisible().size();
+	public Class getType() {
+		return type;
 	}
-
 	@Override
-	public String getColumnName(int i) {
-		return settings.getAssetTableSettings().getTableColumnVisible().get(i);
-	}
-
-	@Override
-	public Class getColumnClass(int i) {
-		String sColumn = settings.getAssetTableSettings().getTableColumnVisible().get(i);
-		if (sColumn.equals("Name")) return String.class;
-		if (sColumn.equals("Group")) return String.class;
-		if (sColumn.equals("Category")) return String.class;
-		if (sColumn.equals("Owner")) return String.class;
-		if (sColumn.equals("Count")) return Long.class;
-		if (sColumn.equals("Location")) return String.class;
-		if (sColumn.equals("Container")) return String.class;
-		if (sColumn.equals("Flag")) return String.class;
-		if (sColumn.equals("Price")) return Double.class;
-		if (sColumn.equals("Sell Min")) return Double.class;
-		if (sColumn.equals("Buy Max")) return Double.class;
-		if (sColumn.equals("Base Price")) return Double.class;
-		if (sColumn.equals("Value")) return Double.class;
-		if (sColumn.equals("Meta")) return String.class;
-		if (sColumn.equals("ID")) return Long.class;
-		if (sColumn.equals("Volume")) return Float.class;
-		if (sColumn.equals("Type ID")) return Integer.class;
-		if (sColumn.equals("Region")) return String.class;
-		if (sColumn.equals("Type Count")) return Long.class;
-		if (sColumn.equals("Security")) return String.class;
-		if (sColumn.equals("Reprocessed")) return Double.class;
-		if (sColumn.equals("Reprocessed Value")) return Double.class;
-
-		return Object.class;
-	}
-
-	@Override
-	public Comparator getColumnComparator(int i) {
-		String sColumn = settings.getAssetTableSettings().getTableColumnVisible().get(i);
-		if (sColumn.equals("Name")) return TableComparators.stringComparator();
-		if (sColumn.equals("Group")) return TableComparators.stringComparator();
-		if (sColumn.equals("Category")) return TableComparators.stringComparator();
-		if (sColumn.equals("Owner")) return TableComparators.stringComparator();
-		if (sColumn.equals("Count")) return TableComparators.numberComparator();
-		if (sColumn.equals("Location")) return TableComparators.stringComparator();
-		if (sColumn.equals("Container")) return TableComparators.stringComparator();
-		if (sColumn.equals("Flag")) return TableComparators.stringComparator();
-		if (sColumn.equals("Price")) return TableComparators.numberComparator();
-		if (sColumn.equals("Sell Min")) return TableComparators.numberComparator();
-		if (sColumn.equals("Buy Max")) return TableComparators.numberComparator();
-		if (sColumn.equals("Base Price")) return TableComparators.numberComparator();
-		if (sColumn.equals("Value")) return TableComparators.numberComparator();
-		if (sColumn.equals("Meta")) return TableComparators.stringComparator();
-		if (sColumn.equals("ID")) return TableComparators.numberComparator();
-		if (sColumn.equals("Volume")) return TableComparators.numberComparator();
-		if (sColumn.equals("Type ID")) return TableComparators.numberComparator();
-		if (sColumn.equals("Region")) return TableComparators.stringComparator();
-		if (sColumn.equals("Type Count")) return TableComparators.numberComparator();
-		if (sColumn.equals("Security")) return TableComparators.stringComparator();
-		if (sColumn.equals("Reprocessed")) return TableComparators.numberComparator();
-		if (sColumn.equals("Reprocessed Value")) return TableComparators.numberComparator();
-		return null;
-	}
-
-	@Override
-	public Object getColumnValue(EveAsset eveAsset, int i) {
-		String sColumn = settings.getAssetTableSettings().getTableColumnVisible().get(i);
-		if (sColumn.equals("Name")) return eveAsset.getName();
-		if (sColumn.equals("Group")) return eveAsset.getGroup();
-		if (sColumn.equals("Category")) return eveAsset.getCategory();
-		if (sColumn.equals("Owner")) return eveAsset.getOwner();
-		if (sColumn.equals("Count")) return eveAsset.getCount();
-		if (sColumn.equals("Location")) return eveAsset.getLocation();
-		if (sColumn.equals("Container")) return eveAsset.getContainer();
-		if (sColumn.equals("Flag")) return eveAsset.getFlag();
-		if (sColumn.equals("Price")) return eveAsset.getPrice();
-		if (sColumn.equals("Sell Min")) return eveAsset.getPriceSellMin();
-		if (sColumn.equals("Buy Max")) return eveAsset.getPriceBuyMax();
-		if (sColumn.equals("Base Price")) return eveAsset.getPriceBase();
-		if (sColumn.equals("Value")) return eveAsset.getValue();
-		if (sColumn.equals("Meta")) return eveAsset.getMeta();
-		if (sColumn.equals("ID")) return eveAsset.getItemID();
-		if (sColumn.equals("Volume")) return eveAsset.getVolume();
-		if (sColumn.equals("Type ID")) return eveAsset.getTypeID();
-		if (sColumn.equals("Region")) return eveAsset.getRegion();
-		if (sColumn.equals("Type Count")) return eveAsset.getTypeCount();
-		if (sColumn.equals("Security")) return eveAsset.getSecurity();
-		if (sColumn.equals("Reprocessed")) return eveAsset.getPriceReprocessed();
-		if (sColumn.equals("Reprocessed Value")) return eveAsset.getValueReprocessed();
-		return new String();
+	public Comparator getComparator() {
+		return comparator;
 	}
 }

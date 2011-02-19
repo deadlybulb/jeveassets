@@ -24,11 +24,11 @@ package net.nikr.eve.jeveasset.gui.tabs.jobs;
 import ca.odell.glazedlists.GlazedLists;
 import java.util.Comparator;
 import net.nikr.eve.jeveasset.data.IndustryJob;
-import net.nikr.eve.jeveasset.gui.shared.table.TableColumn;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.i18n.TabsJobs;
 
 
-enum IndustryJobTableFormat implements TableColumn<IndustryJob> {
+enum IndustryJobTableFormat implements EnumTableColumn<IndustryJob> {
 	STATE(String.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {

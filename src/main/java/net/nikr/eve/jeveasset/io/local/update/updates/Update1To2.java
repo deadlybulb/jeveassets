@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.nikr.eve.jeveasset.data.AssetFilter;
-import net.nikr.eve.jeveasset.data.TableSettings;
 import net.nikr.eve.jeveasset.data.TableSettings.ResizeMode;
 import net.nikr.eve.jeveasset.data.EveAsset;
 import net.nikr.eve.jeveasset.data.Settings;
@@ -121,11 +120,7 @@ public class Update1To2 implements LocalUpdate {
 			tableColumnNames.add(name.getText());
 			if (visible.getText().equals("true")) tableColumnVisible.add(name.getText());
 		}
-		TableSettings tableSettings = new TableSettings();
-		tableSettings.setMode(convertFlag(doc));
-		tableSettings.setTableColumnNames(tableColumnNames);
-		tableSettings.setTableColumnVisible(tableColumnVisible);
-		writeTableSettings(doc, tableSettings);
+		writeTableSettings(doc, convertFlag(doc), tableColumnNames, tableColumnVisible);
 	}
 
 	private String convertDefaultPriceMode(String oldVal) {
@@ -181,15 +176,15 @@ public class Update1To2 implements LocalUpdate {
 		return ResizeMode.NONE;
 	}
 
-	private void writeTableSettings(Document doc, TableSettings tableSettings){
+	private void writeTableSettings(Document doc, ResizeMode mode, List<String> tableColumnNames, List<String> tableColumnVisible){
 		Element tables = doc.getRootElement().addElement("tables");
 		Element table = tables.addElement("table");
 		table.addAttribute("name", Settings.COLUMN_SETTINGS_ASSETS);
-		table.addAttribute("resize", tableSettings.getMode().toString());
-		for (String columnName : tableSettings.getTableColumnNames()){
+		table.addAttribute("resize", mode.toString());
+		for (String columnName : tableColumnNames){
 			Element column = table.addElement("column");
 			column.addAttribute("name", columnName);
-			column.addAttribute("visible", String.valueOf(tableSettings.getTableColumnVisible().contains(columnName)));
+			column.addAttribute("visible", String.valueOf(tableColumnVisible.contains(columnName)));
 		}
 	}
 

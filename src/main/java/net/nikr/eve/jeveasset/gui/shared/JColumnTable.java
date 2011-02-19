@@ -21,11 +21,8 @@
 
 package net.nikr.eve.jeveasset.gui.shared;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -45,25 +42,19 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import net.nikr.eve.jeveasset.data.TableSettings;
 import net.nikr.eve.jeveasset.data.TableSettings.ResizeMode;
 import net.nikr.eve.jeveasset.gui.images.Images;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableFormatAdaptor;
 import net.nikr.eve.jeveasset.i18n.GuiShared;
 
 
-public class JColumnTable extends JTable {
+public class JColumnTable<T extends Enum<T> & EnumTableColumn<Q>, Q> extends JAutoColumnTable {
 
 	private final static String ACTION_AUTO_RESIZING_COLUMNS_TEXT = "ACTION_AUTO_RESIZING_COLUMNS_TEXT";
 	private final static String ACTION_AUTO_RESIZING_COLUMNS_WINDOW = "ACTION_AUTO_RESIZING_COLUMNS_WINDOW";
@@ -73,23 +64,23 @@ public class JColumnTable extends JTable {
 	private JScrollPane jTableScroll;
 	private JDropDownButton jColumnsSelection;
 	private JMenu jColumnMenu;
+	private EnumTableFormatAdaptor<T, Q> formatAdaptor;
+
 
 	private List<ColumnTableListener> listeners = new ArrayList<ColumnTableListener>();
 	private ListenerClass listenerClass = new ListenerClass();
 
-	private TableSettings columnTableSettings;
+	private TableSettings<T, Q> columnTableSettings;
 
-	public JColumnTable(AbstractTableModel abstractTableModel, TableSettings columnTableSettings) {
-		super(abstractTableModel);
+	public JColumnTable(AbstractTableModel abstractTableModel, TableSettings<T, Q> columnTableSettings, EnumTableFormatAdaptor<T, Q> formatAdaptor) {
+		super(abstractTableModel, formatAdaptor);
 		this.columnTableSettings = columnTableSettings;
+		this.formatAdaptor = formatAdaptor;
+		
+		formatAdaptor.setTableSettings(columnTableSettings);
+		
 
 		//Listeners
-		this.getTableHeader().addMouseListener(listenerClass);
-		this.addPropertyChangeListener("tableHeader", listenerClass);
-
-		this.getColumnModel().addColumnModelListener(listenerClass);
-		this.addPropertyChangeListener("columnModel", listenerClass);
-
 		abstractTableModel.addTableModelListener(listenerClass);
 		this.addPropertyChangeListener("model", listenerClass);
 
@@ -98,7 +89,6 @@ public class JColumnTable extends JTable {
 		jColumnsSelection.setIcon(Images.ICON_ARROW_DOWN);
 		jColumnsSelection.setHorizontalAlignment(SwingConstants.RIGHT);
 		jColumnsSelection.setBorder(null);
-		jColumnsSelection.addMouseListener(listenerClass);
 
 		//Table Menu
 		jColumnMenu = new JMenu(GuiShared.get().columns());
@@ -151,10 +141,10 @@ public class JColumnTable extends JTable {
 
 	private void tableUpdateCoulmnsSize(){
 		if (columnTableSettings.getMode().equals(ResizeMode.TEXT)){
-			TableColumnUtil.resizeColumnsText(this, jTableScroll);
+			resizeColumnsText(this, jTableScroll);
 		}
 		if (columnTableSettings.getMode().equals(ResizeMode.WINDOW)){
-			TableColumnUtil.resizeColumnsWindow(this);
+			resizeColumnsWindow(this);
 		}
 		if (!columnTableSettings.getMode().equals(ResizeMode.TEXT) && !columnTableSettings.getMode().equals(ResizeMode.WINDOW)){
 			this.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -179,7 +169,7 @@ public class JColumnTable extends JTable {
 					int width = widths.get(name);
 					this.getColumnModel().getColumn(a).setPreferredWidth(width);
 				} else {
-					TableColumnUtil.resizeColumn(this, this.getColumnModel().getColumn(a), a);
+					resizeColumn(this, this.getColumnModel().getColumn(a), a);
 				}
 			}
 		}
@@ -231,13 +221,13 @@ public class JColumnTable extends JTable {
 		jComponent.add(jRadioButtonMenuItem);
 
 		addSeparator(jComponent);
-
-		for (String columnName : columnTableSettings.getTableColumnNames()){
+		for (T column : columnTableSettings.getTableColumnNames()){
+			String columnName = column.getColumnName();
 			jCheckBoxMenuItem = new JCheckBoxMenuItem(columnName);
-			jCheckBoxMenuItem.setActionCommand(columnName);
+			jCheckBoxMenuItem.setActionCommand(column.toString());
 			jCheckBoxMenuItem.addActionListener(listenerClass);
 			jCheckBoxMenuItem.setIcon(Images.ICON_TABLE_SHOW);
-			jCheckBoxMenuItem.setSelected(columnTableSettings.getTableColumnVisible().contains(columnName));
+			jCheckBoxMenuItem.setSelected(columnTableSettings.getTableColumnVisible().contains(column));
 			jComponent.add(jCheckBoxMenuItem);
 		}
 	}
@@ -257,13 +247,10 @@ public class JColumnTable extends JTable {
 		}
 	}
 
-	class ListenerClass implements ActionListener, MouseListener, 
-			TableColumnModelListener, TableModelListener, PropertyChangeListener{
+	private class ListenerClass implements ActionListener, TableModelListener,
+			PropertyChangeListener{
 
 		//Data
-		private boolean columnMoved = false;
-		private List<String> tempMainTableColumnNames;
-		private List<String> tempMainTableColumnVisible;
 		private int rowsLastTime = 0;
 		private int rowsCount = 0;
 
@@ -271,7 +258,7 @@ public class JColumnTable extends JTable {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (ACTION_RESET_COLUMNS_TO_DEFAULT.equals(e.getActionCommand())){
-				columnTableSettings.resetColumns();
+				formatAdaptor.resetColumns();
 				tableUpdateTableStructure();
 				tableUpdateCoulmnsSize();
 				tableUpdateColumnMenus();
@@ -297,96 +284,18 @@ public class JColumnTable extends JTable {
 			}
 			//Hide/show column
 			if (e.getSource() instanceof JCheckBoxMenuItem){
-				if (columnTableSettings.getTableColumnVisible().contains(e.getActionCommand())){
-					columnTableSettings.getTableColumnVisible().remove(e.getActionCommand());
+				T column = columnTableSettings.getColumn(e.getActionCommand());
+				if (columnTableSettings.getTableColumnVisible().contains(column)){
+					formatAdaptor.hideColumn(column);
 				} else {
-					columnTableSettings.getTableColumnVisible().add(e.getActionCommand());
-					//Fix column order
-					List<String> mainTableColumnVisible = new ArrayList<String>();
-					for (String columnName : columnTableSettings.getTableColumnNames()){
-						if (columnTableSettings.getTableColumnVisible().contains(columnName)){
-							mainTableColumnVisible.add(columnName);
-						}
-					}
-					columnTableSettings.setTableColumnVisible(mainTableColumnVisible);
+					formatAdaptor.showColumn(column);
 				}
-				tableUpdateTableStructure();
+				//FIXME JColumnTable hide/show column
+				getAbstractTableModel().fireTableStructureChanged();
+				tableUpdateCoulmnsSize();
 				tableUpdateColumnMenus();
 			}
 		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			if (e.getSource().equals(getTableHeader())){
-				tempMainTableColumnNames = new ArrayList<String>(columnTableSettings.getTableColumnNames());
-				tempMainTableColumnVisible = new ArrayList<String>(columnTableSettings.getTableColumnVisible());
-			}
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			if (e.getSource().equals(getTableHeader()) && columnMoved){
-				columnMoved = false;
-				columnTableSettings.setTableColumnNames(tempMainTableColumnNames);
-				columnTableSettings.setTableColumnVisible(tempMainTableColumnVisible);
-				tableUpdateTableStructure();
-				tableUpdateColumnMenus();
-			}
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {}
-
-		@Override
-		public void mouseExited(MouseEvent e) {}
-
-
-		@Override
-		public void columnAdded(TableColumnModelEvent e) {}
-
-		@Override
-		public void columnRemoved(TableColumnModelEvent e) {}
-
-		@Override
-		public void columnMoved(TableColumnModelEvent e) {
-			if (e.getFromIndex() != e.getToIndex()){
-				columnMoved = true;
-
-				String movingColumnName = tempMainTableColumnVisible.get(e.getFromIndex());
-				String movingToColumnName = tempMainTableColumnVisible.get(e.getToIndex());
-
-				int movingIndex = tempMainTableColumnNames.indexOf(movingColumnName);
-				tempMainTableColumnNames.remove(movingIndex);
-
-				int movingToIndex = tempMainTableColumnNames.indexOf(movingToColumnName);
-				if (e.getToIndex() > e.getFromIndex()) movingToIndex = movingToIndex + 1;
-				tempMainTableColumnNames.add(movingToIndex, movingColumnName);
-
-				List<String> mainTableColumnVisible = new ArrayList<String>();
-				String columnOrder = "";
-				String columnVisible = "";
-				for (int a = 0; a < tempMainTableColumnNames.size(); a++){
-					columnOrder = GuiShared.get().whitespace37(columnOrder,
-							tempMainTableColumnNames.get(a));
-					if (columnTableSettings.getTableColumnVisible().contains(tempMainTableColumnNames.get(a))){
-						columnVisible = GuiShared.get().whitespace37(columnVisible,
-								tempMainTableColumnNames.get(a));
-						mainTableColumnVisible.add(tempMainTableColumnNames.get(a));
-					}
-				}
-				tempMainTableColumnVisible = mainTableColumnVisible;
-			}
-		}
-
-
-		@Override
-		public void columnMarginChanged(ChangeEvent e) {}
-
-		@Override
-		public void columnSelectionChanged(ListSelectionEvent e) {}
 
 		@Override
 		public void tableChanged(TableModelEvent e) { //Filter
@@ -403,20 +312,6 @@ public class JColumnTable extends JTable {
 
 		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
-			if (evt.getPropertyName().equals("tableHeader")){
-				Object o = evt.getNewValue();
-				if (o instanceof JTableHeader){
-					JTableHeader header = (JTableHeader) o;
-					header.addMouseListener(listenerClass);
-				}
-			}
-			if (evt.getPropertyName().equals("columnModel")){
-				Object o = evt.getNewValue();
-				if (o instanceof TableColumnModel){
-					TableColumnModel model = (TableColumnModel) o;
-					model.addColumnModelListener(listenerClass);
-				}
-			}
 			if (evt.getPropertyName().equals("model")){
 				Object o = evt.getNewValue();
 				if (o instanceof AbstractTableModel){
@@ -427,57 +322,23 @@ public class JColumnTable extends JTable {
 				}
 			}
 		}
+
+		
+	}
+
+	@Override
+	public void autoResizeColumns() {
+		tableUpdateCoulmnsSize();
+	}
+
+	@Override
+	public void movedColumn(int from, int to) {
+		formatAdaptor.moveColumn(from, to);
+		tableUpdateTableStructure();
+		tableUpdateColumnMenus();
 	}
 
 	public interface ColumnTableListener {
 		public void tableUpdate();
-	}
-
-	public static class TableColumnUtil{
-		
-		private TableColumnUtil() {}
-
-		public static void resizeColumnsText(JTable jTable, JScrollPane jScroll) {
-			if (jTable.getRowCount() > 0){
-				int size = 0;
-				jTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-				for (int i = 0; i < jTable.getColumnCount(); i++) {
-					 size = size+resizeColumn(jTable, jTable.getColumnModel().getColumn(i), i);
-				}
-				if (size < jScroll.getSize().width){
-					jTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-				}
-			} else {
-				for (int i = 0; i < jTable.getColumnCount(); i++) {
-					jTable.getColumnModel().getColumn(i).setPreferredWidth(75);
-				}
-				jTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-			}
-		}
-
-		public static void resizeColumnsWindow(JTable jTable) {
-			for (int a = 0; a < jTable.getColumnCount(); a++){
-				jTable.getColumnModel().getColumn(a).setPreferredWidth(75);
-			}
-			jTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		}
-
-		public static int resizeColumn(JTable jTable, TableColumn column, int columnIndex) {
-			int maxWidth = 0;
-			TableCellRenderer renderer = column.getHeaderRenderer();
-			if (renderer == null) {
-				renderer = jTable.getTableHeader().getDefaultRenderer();
-			}
-			Component component = renderer.getTableCellRendererComponent(jTable, column.getHeaderValue(), false, false, 0, 0);
-			maxWidth = component.getPreferredSize().width;
-			for (int a = 0; a < jTable.getRowCount(); a++){
-				renderer = jTable.getCellRenderer(a, columnIndex);
-				if (renderer instanceof SeparatorTableCell) continue;
-				component = renderer.getTableCellRendererComponent(jTable, jTable.getValueAt(a, columnIndex), false, false, a, columnIndex);
-				maxWidth = Math.max(maxWidth, component.getPreferredSize().width);
-			}
-			column.setPreferredWidth(maxWidth+4);
-			return maxWidth+4;
-		}
 	}
 }

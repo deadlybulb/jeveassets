@@ -72,7 +72,7 @@ public class EveAssetMatcherEditor extends AbstractMatcherEditor<EveAsset> imple
 
 		Vector<String> columns = new Vector<String>();
 		columns.add("All");
-		columns.addAll( program.getSettings().getAssetTableSettings().getTableColumnNames() );
+		columns.addAll(program.getSettings().getAssetTableSettings().getNames());
 		jColumn = new JComboBox(columns);
 		jColumn.setActionCommand(ACTION_COLUMN_SELECTED);
 		jColumn.addActionListener(this);

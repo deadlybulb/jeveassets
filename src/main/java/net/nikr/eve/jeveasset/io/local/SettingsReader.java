@@ -39,6 +39,8 @@ import net.nikr.eve.jeveasset.data.ReprocessSettings;
 import net.nikr.eve.jeveasset.data.Settings;
 import net.nikr.eve.jeveasset.data.UserItemName;
 import net.nikr.eve.jeveasset.data.UserPrice;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
+import net.nikr.eve.jeveasset.gui.tabs.assets.EveAssetTableFormat;
 import net.nikr.eve.jeveasset.io.local.update.Update;
 import net.nikr.eve.jeveasset.io.shared.AbstractXmlReader;
 import net.nikr.eve.jeveasset.io.shared.AttributeGetters;
@@ -51,7 +53,7 @@ import org.w3c.dom.NodeList;
 
 public class SettingsReader extends AbstractXmlReader {
 	
-	public static final int SETTINGS_VERSION = 2;
+	public static final int SETTINGS_VERSION = 3;
 
 	private final static Logger LOG = LoggerFactory.getLogger(SettingsReader.class);
 
@@ -300,22 +302,24 @@ public class SettingsReader extends AbstractXmlReader {
 			String table = AttributeGetters.getString(tableNode, "name");
 			ResizeMode resize = ResizeMode.valueOf(AttributeGetters.getString(tableNode, "resize"));
 			NodeList columnNodes = tableNode.getElementsByTagName("column");
-			List<String> tableColumnNames = new ArrayList<String>();
-			List<String> tableColumnVisible = new ArrayList<String>();
-			for (int b = 0; b < columnNodes.getLength(); b++){
-				Element columnNode = (Element) columnNodes.item(b);
-				String name = AttributeGetters.getString(columnNode, "name");
-				boolean visible = AttributeGetters.getBoolean(columnNode, "visible");
-				tableColumnNames.add(name);
-				if (visible) tableColumnVisible.add(name);
-			}
-			TableSettings tableSettings = settings.getTableSettings().get(table);
-			tableSettings.setMode(resize);
-			tableSettings.setTableColumnNames(tableColumnNames);
-			tableSettings.setTableColumnVisible(tableColumnVisible);
-
-
+			if (table.equals(Settings.COLUMN_SETTINGS_ASSETS)) loadAssetsTableSettings(settings, columnNodes, resize);
 		}
+	}
+
+	private static void loadAssetsTableSettings(Settings settings, NodeList columnNodes, ResizeMode resize) {
+		List<EveAssetTableFormat> tableColumnNames = new ArrayList<EveAssetTableFormat>();
+		List<EveAssetTableFormat> tableColumnVisible = new ArrayList<EveAssetTableFormat>();
+		for (int b = 0; b < columnNodes.getLength(); b++){
+			Element columnNode = (Element) columnNodes.item(b);
+			String name = AttributeGetters.getString(columnNode, "name");
+			boolean visible = AttributeGetters.getBoolean(columnNode, "visible");
+			tableColumnNames.add(EveAssetTableFormat.valueOf(name));
+			if (visible) tableColumnVisible.add(EveAssetTableFormat.valueOf(name));
+		}
+		TableSettings<EveAssetTableFormat, EveAsset> tableSettings = settings.getAssetTableSettings();
+		tableSettings.setMode(resize);
+		tableSettings.setTableColumnNames(tableColumnNames);
+		tableSettings.setTableColumnVisible(tableColumnVisible);
 	}
 
 	private static void parseUpdates(Element element, Settings settings){

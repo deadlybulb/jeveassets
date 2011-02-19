@@ -21,7 +21,9 @@
 
 package net.nikr.eve.jeveasset.data;
 
-import com.beimin.eveapi.AbstractApiParser;
+import com.beimin.eveapi.EveApi;
+import com.beimin.eveapi.connectors.ApiConnector;
+import com.beimin.eveapi.connectors.ProxyConnector;
 import com.beimin.eveapi.eve.conquerablestationlist.ApiStation;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -32,7 +34,10 @@ import java.net.Proxy;
 import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +46,7 @@ import java.util.TimeZone;
 import net.nikr.eve.jeveasset.Program;
 import net.nikr.eve.jeveasset.SplashUpdater;
 import net.nikr.eve.jeveasset.data.model.Galaxy;
+import net.nikr.eve.jeveasset.gui.tabs.assets.EveAssetTableFormat;
 import net.nikr.eve.jeveasset.io.local.AssetsReader;
 import net.nikr.eve.jeveasset.io.local.AssetsWriter;
 import net.nikr.eve.jeveasset.io.local.ConquerableStationsReader;
@@ -102,9 +108,9 @@ public class Settings{
 	private List<Account> accounts;
 	private List<Long> bpos; //ItemID : long
 	private Map<String, List<AssetFilter>> assetFilters;
-	private final List<String> assetTableColumns = new ArrayList<String>();
 	private final Map<String, TableSettings> tableSettings = new HashMap<String, TableSettings>();
 	private final Map<String, Float> packagedVolume = new HashMap<String, Float>();
+	private TableSettings<EveAssetTableFormat, EveAsset> assetsTableSettings;
 	private Map<String, String> assetTableColumnTooltips;
 	private List<String> assetTableNumberColumns;
 	private Date conquerableStationsNextUpdate;
@@ -192,30 +198,9 @@ public class Settings{
 		//		gui.dialogs.CsvExportDialog.getLine()
 		//	If number column:
 		//		add to mainTableNumberColumns bellow
-		assetTableColumns.add("Name");
-		assetTableColumns.add("Group");
-		assetTableColumns.add("Category");
-		assetTableColumns.add("Owner");
-		assetTableColumns.add("Location");
-		assetTableColumns.add("Security");
-		assetTableColumns.add("Region");
-		assetTableColumns.add("Container");
-		assetTableColumns.add("Flag");
-		assetTableColumns.add("Price");
-		assetTableColumns.add("Sell Min");
-		assetTableColumns.add("Buy Max");
-		assetTableColumns.add("Reprocessed");
-		assetTableColumns.add("Base Price");
-		assetTableColumns.add("Reprocessed Value");
-		assetTableColumns.add("Value");
-		assetTableColumns.add("Count");
-		assetTableColumns.add("Type Count");
-		assetTableColumns.add("Meta");
-		assetTableColumns.add("Volume");
-		assetTableColumns.add("ID");
-		assetTableColumns.add("Type ID");
-
-		tableSettings.put(COLUMN_SETTINGS_ASSETS, new TableSettings(assetTableColumns));
+		List<EveAssetTableFormat> assetTableColumns = new ArrayList<EveAssetTableFormat>(Arrays.asList(EveAssetTableFormat.values()));
+		assetsTableSettings = new TableSettings<EveAssetTableFormat, EveAsset>(assetTableColumns);
+		tableSettings.put(COLUMN_SETTINGS_ASSETS, assetsTableSettings);
 
 		assetTableColumnTooltips = new HashMap<String, String>();
 		assetTableColumnTooltips.put("Security", "System Security Status");
@@ -262,6 +247,7 @@ public class Settings{
 		windowAutoSave = true;
 		loadSettings();
 		model = new Galaxy(this.locations, this.jumps);
+		constructEveApiConnector();
 	}
 
 	/**
@@ -296,6 +282,7 @@ public class Settings{
 	//Find profiles
 		ProfileReader.load(this);
 		SplashUpdater.setProgress(35);
+		constructEveApiConnector();
 	}
 
 	public void loadActiveProfile(){
@@ -308,6 +295,7 @@ public class Settings{
 		clearEveAssetList(); //Must be cleared to update uniqueIds
 		priceDataGetter.load(); //Price Data - Must be loaded last
 		SplashUpdater.setProgress(45);
+		constructEveApiConnector();
 	}
 
 	public void saveAssets(){
@@ -583,7 +571,7 @@ public class Settings{
 	public void setProxy(Proxy proxy) {
 		this.proxy = proxy;
 		// pass the new proxy onto the API framework.
-		AbstractApiParser.setHttpProxy(proxy);
+		constructEveApiConnector();
 	}
 
   /**
@@ -641,8 +629,26 @@ public class Settings{
 	 * @param apiProxy pass null to disable any API proxy, and use the default: http://api.eve-online.com
 	 */
 	public void setApiProxy(String apiProxy) {
-		AbstractApiParser.setEveApiURL(apiProxy);
 		this.apiProxy = apiProxy;
+		constructEveApiConnector();
+	}
+
+	/**
+	 * build the API Connector and set it in the library.
+	 */
+	private void constructEveApiConnector() {
+		String apiProxy = getApiProxy();
+		Proxy proxy = getProxy();
+		ApiConnector connector;
+		if (apiProxy != null) {
+			connector = new ApiConnector(apiProxy);
+		} else {
+			connector = new ApiConnector(apiProxy);
+		}
+		if (proxy != null) {
+			connector = new ProxyConnector(proxy, connector);
+		}
+		EveApi.setConnector(connector);
 	}
 
 	public Map<Long, ApiStation> getConquerableStations() {
@@ -669,10 +675,9 @@ public class Settings{
 		return tableSettings;
 	}
 
-	public TableSettings getAssetTableSettings(){
-		return tableSettings.get(COLUMN_SETTINGS_ASSETS);
+	public TableSettings<EveAssetTableFormat, EveAsset> getAssetTableSettings(){
+		return assetsTableSettings;
 	}
-
 
 	public boolean isFilterOnEnter() {
 		return flags.get(FLAG_FILTER_ON_ENTER);
@@ -863,6 +868,10 @@ public class Settings{
 			}
 		}
 		return ret;
+	}
+
+	public static DateFormat getSettingsDateFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	}
 
 	public boolean isUpdatable(Date date){

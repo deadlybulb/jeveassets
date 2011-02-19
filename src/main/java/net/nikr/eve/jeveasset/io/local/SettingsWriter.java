@@ -35,6 +35,7 @@ import net.nikr.eve.jeveasset.data.ReprocessSettings;
 import net.nikr.eve.jeveasset.data.Settings;
 import net.nikr.eve.jeveasset.data.UserItemName;
 import net.nikr.eve.jeveasset.data.UserPrice;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.io.shared.AbstractXmlWriter;
 import net.nikr.eve.jeveasset.io.shared.XmlException;
 import org.slf4j.Logger;
@@ -170,18 +171,19 @@ public class SettingsWriter extends AbstractXmlWriter {
 		}
 	}
 
-	public static void writeTableSettings(Document xmldoc, Map<String, TableSettings> tableSettings){
+	public static void writeTableSettings(Document xmldoc, Map<String, TableSettings> tableSettingsList){
 		Element parentNode = xmldoc.createElementNS(null, "tables");
 		xmldoc.getDocumentElement().appendChild(parentNode);
-		for (Entry<String, TableSettings> entry : tableSettings.entrySet()){
+		for (Entry<String, TableSettings> entry : tableSettingsList.entrySet()){
 			Element tableNode = xmldoc.createElementNS(null, "table");
 			tableNode.setAttributeNS(null, "name", entry.getKey());
 			tableNode.setAttributeNS(null, "resize", entry.getValue().getMode().toString());
 			parentNode.appendChild(tableNode);
-			for (String column : entry.getValue().getTableColumnNames()){
+			TableSettings<?,?> tableSettings = entry.getValue();
+			for (EnumTableColumn column : tableSettings.getTableColumns()){
 				boolean visible = entry.getValue().getTableColumnVisible().contains(column);
 				Element node = xmldoc.createElementNS(null, "column");
-				node.setAttributeNS(null, "name", column);
+				node.setAttributeNS(null, "name", column.toString());
 				node.setAttributeNS(null, "visible", String.valueOf(visible));
 				tableNode.appendChild(node);
 			}

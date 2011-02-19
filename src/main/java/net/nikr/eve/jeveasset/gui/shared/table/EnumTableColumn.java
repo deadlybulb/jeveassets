@@ -6,7 +6,7 @@ import java.util.Comparator;
  *
  * @author Candle
  */
-public interface TableColumn<Q> {
+public interface EnumTableColumn<Q> {
 	Class getType();
 	Comparator getComparator();
 	String getColumnName();

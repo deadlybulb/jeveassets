@@ -105,7 +105,7 @@ public class Main {
 		Program.setForceNoUpdate(hasNoUpdate && Program.isDebug());
 		Program.setForceUpdate(hasUpdate && Program.isDebug());
 
-		//FIXME Workaround for default Danish language
+		//TODO Workaround for default Danish language
 		BundleCache.setThreadLocale(Locale.ENGLISH);
 
 		// fix the uncaught exception handlers

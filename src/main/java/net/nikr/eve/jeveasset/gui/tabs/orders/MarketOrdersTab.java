@@ -52,7 +52,7 @@ import net.nikr.eve.jeveasset.data.Account;
 import net.nikr.eve.jeveasset.data.Human;
 import net.nikr.eve.jeveasset.data.MarketOrder;
 import net.nikr.eve.jeveasset.gui.shared.table.EnumTableFormatAdaptor;
-import net.nikr.eve.jeveasset.gui.shared.table.TableColumn;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.gui.images.Images;
 import net.nikr.eve.jeveasset.gui.shared.JMainTab;
 import net.nikr.eve.jeveasset.gui.shared.JAutoColumnTable;
@@ -96,9 +96,9 @@ public class MarketOrdersTab extends JMainTab implements ActionListener{
 		jState.addActionListener(this);
 
 		//Table format
-		EnumTableFormatAdaptor<MarketTableFormat, MarketOrder> buyTableFormat =
-				new EnumTableFormatAdaptor<MarketTableFormat, MarketOrder>(MarketTableFormat.class);
 		EnumTableFormatAdaptor<MarketTableFormat, MarketOrder> sellTableFormat =
+				new EnumTableFormatAdaptor<MarketTableFormat, MarketOrder>(MarketTableFormat.class);
+		EnumTableFormatAdaptor<MarketTableFormat, MarketOrder> buyTableFormat =
 				new EnumTableFormatAdaptor<MarketTableFormat, MarketOrder>(MarketTableFormat.class);
 		//Backend
 		sellOrdersEventList = new BasicEventList<MarketOrder>();
@@ -110,8 +110,8 @@ public class MarketOrdersTab extends JMainTab implements ActionListener{
 		sellOrdersTableModel = new EventTableModel<MarketOrder>(sellOrdersSortedList, sellTableFormat);
 		buyOrdersTableModel = new EventTableModel<MarketOrder>(buyOrdersSortedList, buyTableFormat);
 		//Tables
-		jSellOrders = new JAutoColumnTable(sellOrdersTableModel);
-		jBuyOrders = new JAutoColumnTable(buyOrdersTableModel);
+		jSellOrders = new JAutoColumnTable(sellOrdersTableModel, sellTableFormat);
+		jBuyOrders = new JAutoColumnTable(buyOrdersTableModel, buyTableFormat);
 		//Table Selection
 		EventSelectionModel<MarketOrder> sellSelectionModel = new EventSelectionModel<MarketOrder>(sellOrdersEventList);
 		sellSelectionModel.setSelectionMode(ListSelection.MULTIPLE_INTERVAL_SELECTION_DEFENSIVE);

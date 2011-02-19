@@ -3,7 +3,7 @@ package net.nikr.eve.jeveasset.gui.tabs.orders;
 import java.util.Comparator;
 import net.nikr.eve.jeveasset.data.MarketOrder;
 import net.nikr.eve.jeveasset.data.MarketOrder.Quantity;
-import net.nikr.eve.jeveasset.gui.shared.table.TableColumn;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.gui.shared.TableComparators;
 import net.nikr.eve.jeveasset.i18n.TabsOrders;
 
@@ -11,7 +11,7 @@ import net.nikr.eve.jeveasset.i18n.TabsOrders;
  * Describes the market orders table format.
  * @author Candle
  */
-enum MarketTableFormat implements TableColumn<MarketOrder> {
+enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 	NAME(String.class, TableComparators.stringComparator()) {
 		@Override
 		public String getColumnName() {

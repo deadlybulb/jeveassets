@@ -35,9 +35,10 @@ import net.nikr.eve.jeveasset.gui.shared.TableCellRenderers.DoubleCellRenderer;
 import net.nikr.eve.jeveasset.gui.shared.TableCellRenderers.FloatCellRenderer;
 import net.nikr.eve.jeveasset.gui.shared.TableCellRenderers.LongCellRenderer;
 import net.nikr.eve.jeveasset.gui.shared.TableCellRenderers.IntegerCellRenderer;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableFormatAdaptor;
 
 
-public class JAssetTable extends JColumnTable {
+public class JAssetTable extends JColumnTable<EveAssetTableFormat, EveAsset> {
 
 	private EventTableModel<EveAsset> eventTableModel;
 	private DoubleCellRenderer doubleCellRenderer;
@@ -48,8 +49,8 @@ public class JAssetTable extends JColumnTable {
 
 	private Program program;
 
-	public JAssetTable(Program program, EventTableModel<EveAsset> eventTableModel, TableSettings tableSettings) {
-		super(eventTableModel, tableSettings);
+	public JAssetTable(Program program, EventTableModel<EveAsset> eventTableModel, TableSettings<EveAssetTableFormat, EveAsset> tableSettings, EnumTableFormatAdaptor<EveAssetTableFormat, EveAsset> formatAdaptor) {
+		super(eventTableModel, tableSettings, formatAdaptor);
 		this.program = program;
 		this.eventTableModel = eventTableModel;
 

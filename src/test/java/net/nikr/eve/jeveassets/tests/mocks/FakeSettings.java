@@ -46,6 +46,7 @@ import net.nikr.eve.jeveasset.data.TableSettings;
 import net.nikr.eve.jeveasset.data.UserItemName;
 import net.nikr.eve.jeveasset.data.UserPrice;
 import net.nikr.eve.jeveasset.data.model.Galaxy;
+import net.nikr.eve.jeveasset.gui.tabs.assets.EveAssetTableFormat;
 import net.nikr.eve.jeveasset.io.online.PriceDataGetter;
 
 /**
@@ -409,7 +410,7 @@ public abstract class FakeSettings extends Settings {
 	}
 
 	@Override
-	public TableSettings getAssetTableSettings() {
+	public TableSettings<EveAssetTableFormat, EveAsset> getAssetTableSettings() {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

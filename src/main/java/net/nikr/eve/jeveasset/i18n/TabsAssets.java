@@ -58,4 +58,26 @@ public abstract class TabsAssets extends Bundle {
 	public abstract String volume();
 	public abstract String untitled();
 	public abstract String you();
+	public abstract String columnName();
+	public abstract String columnGroup();
+	public abstract String columnCategory();
+	public abstract String columnOwner();
+	public abstract String columnCount();
+	public abstract String columnLocation();
+	public abstract String columnContainer();
+	public abstract String columnFlag();
+	public abstract String columnPrice();
+	public abstract String columnSellMin();
+	public abstract String columnBuyMax();
+	public abstract String columnBasePrice();
+	public abstract String columnValue();
+	public abstract String columnMeta();
+	public abstract String columnItemID();
+	public abstract String columnVolume();
+	public abstract String columnTypeID();
+	public abstract String columnRegion();
+	public abstract String columnTypeCount();
+	public abstract String columnSecurity();
+	public abstract String columnReprocessed();
+	public abstract String columnReprocessedValue();
 }

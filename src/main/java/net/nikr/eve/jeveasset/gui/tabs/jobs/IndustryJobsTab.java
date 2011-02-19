@@ -86,15 +86,15 @@ public class IndustryJobsTab extends JMainTab implements ActionListener {
 		JLabel jActivityLabel = new JLabel(TabsJobs.get().activity());
 
 		//Table format
-		EnumTableFormatAdaptor<IndustryJobTableFormat, IndustryJob> industryJobsTableFormat = new EnumTableFormatAdaptor<IndustryJobTableFormat, IndustryJob>(IndustryJobTableFormat.class);
+		EnumTableFormatAdaptor<IndustryJobTableFormat, IndustryJob> tableFormat = new EnumTableFormatAdaptor<IndustryJobTableFormat, IndustryJob>(IndustryJobTableFormat.class);
 		//Backend
 		jobsEventList = new BasicEventList<IndustryJob>();
 		//For soring the table
 		SortedList<IndustryJob> jobsSortedList = new SortedList<IndustryJob>(jobsEventList);
 		//Table Model
-		jobsTableModel = new EventTableModel<IndustryJob>(jobsSortedList, industryJobsTableFormat);
+		jobsTableModel = new EventTableModel<IndustryJob>(jobsSortedList, tableFormat);
 		//Tables
-		jTable = new JAutoColumnTable(jobsTableModel);
+		jTable = new JAutoColumnTable(jobsTableModel, tableFormat);
 		//Table Selection
 		EventSelectionModel<IndustryJob> selectionModel = new EventSelectionModel<IndustryJob>(jobsEventList);
 		selectionModel.setSelectionMode(ListSelection.MULTIPLE_INTERVAL_SELECTION_DEFENSIVE);
@@ -102,7 +102,7 @@ public class IndustryJobsTab extends JMainTab implements ActionListener {
 		//Listeners
 		installTableMenu(jTable);
 		//Sorters
-		TableComparatorChooser.install(jTable, jobsSortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, industryJobsTableFormat);
+		TableComparatorChooser.install(jTable, jobsSortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, tableFormat);
 		//Scroll Panels
 		JScrollPane jJobsScrollPanel = jTable.getScrollPanel();
 

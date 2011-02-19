@@ -25,7 +25,7 @@ import ca.odell.glazedlists.GlazedLists;
 import java.util.Comparator;
 import net.nikr.eve.jeveasset.data.Module;
 import net.nikr.eve.jeveasset.data.Module.ModulePriceValue;
-import net.nikr.eve.jeveasset.gui.shared.table.TableColumn;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.i18n.TabsLoadout;
 
 /**
@@ -33,7 +33,7 @@ import net.nikr.eve.jeveasset.i18n.TabsLoadout;
  * @author Niklas
  * @author Candle
  */
-enum ModuleTableFormat implements TableColumn<Module> {
+enum ModuleTableFormat implements EnumTableColumn<Module> {
 	NAME(String.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {

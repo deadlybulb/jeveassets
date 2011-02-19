@@ -153,12 +153,24 @@ public class AssetsWriter extends AbstractXmlWriter {
 			childNode.setAttributeNS(null, "orderstate", String.valueOf(apiMarketOrder.getOrderState()));
 			childNode.setAttributeNS(null, "typeid", String.valueOf(apiMarketOrder.getTypeID()));
 			childNode.setAttributeNS(null, "range", String.valueOf(apiMarketOrder.getRange()));
-			childNode.setAttributeNS(null, "accountkey", String.valueOf(apiMarketOrder.getAccountKey()));
+LOG.info("Data files are out of date, updating. Current: "+currentVersion+" Max: "+requiredVersion);
+				if (currentVersion == 1){
+					LOG.info("Updating from 1 to 3");
+					Update1To2 update1 = new Update1To2();
+					update1.performUpdate();
+					Update2To3 update2 = new Update2To3();
+					update2.performUpdate();
+				}
+				if (currentVersion == 2){
+					LOG.info("Updating from 2 to 3");
+					Update2To3 update2 = new Update2To3();
+					update2.performUpdate();
+							childNode.setAttributeNS(null, "accountkey", String.valueOf(apiMarketOrder.getAccountKey()));
 			childNode.setAttributeNS(null, "duration", String.valueOf(apiMarketOrder.getDuration()));
 			childNode.setAttributeNS(null, "escrow", String.valueOf(apiMarketOrder.getEscrow()));
 			childNode.setAttributeNS(null, "price", String.valueOf(apiMarketOrder.getPrice()));
 			childNode.setAttributeNS(null, "bid", String.valueOf(apiMarketOrder.getBid()));
-			childNode.setAttributeNS(null, "issued", String.valueOf(apiMarketOrder.getIssued()));
+			childNode.setAttributeNS(null, "issued", String.valueOf(apiMarketOrder.getIssued().getTime()));
 			node.appendChild(childNode);
 		}
 	}
@@ -195,16 +207,16 @@ public class AssetsWriter extends AbstractXmlWriter {
 			childNode.setAttributeNS(null, "outputtypeid", String.valueOf(apiIndustryJob.getOutputTypeID()));
 			childNode.setAttributeNS(null, "containertypeid", String.valueOf(apiIndustryJob.getContainerTypeID()));
 			childNode.setAttributeNS(null, "installeditemcopy", String.valueOf(apiIndustryJob.getInstalledItemCopy()));
-			childNode.setAttributeNS(null, "completed", String.valueOf(apiIndustryJob.getCompleted()));
-			childNode.setAttributeNS(null, "completedsuccessfully", String.valueOf(apiIndustryJob.getCompletedSuccessfully()));
+			childNode.setAttributeNS(null, "completed", String.valueOf(apiIndustryJob.getCompletedStatus()));
+			childNode.setAttributeNS(null, "completedsuccessfully", apiIndustryJob.isCompletedSuccessfully() ? "1" : "0");
 			childNode.setAttributeNS(null, "installeditemflag", String.valueOf(apiIndustryJob.getInstalledItemFlag()));
 			childNode.setAttributeNS(null, "outputflag", String.valueOf(apiIndustryJob.getOutputFlag()));
 			childNode.setAttributeNS(null, "activityid", String.valueOf(apiIndustryJob.getActivityID()));
 			childNode.setAttributeNS(null, "completedstatus", String.valueOf(apiIndustryJob.getCompletedStatus()));
-			childNode.setAttributeNS(null, "installtime", apiIndustryJob.getInstallTime());
-			childNode.setAttributeNS(null, "beginproductiontime", apiIndustryJob.getBeginProductionTime());
-			childNode.setAttributeNS(null, "endproductiontime", apiIndustryJob.getEndProductionTime());
-			childNode.setAttributeNS(null, "pauseproductiontime", apiIndustryJob.getPauseProductionTime());
+			childNode.setAttributeNS(null, "installtime", String.valueOf(apiIndustryJob.getInstallTime().getTime()));
+			childNode.setAttributeNS(null, "beginproductiontime", String.valueOf(apiIndustryJob.getBeginProductionTime().getTime()));
+			childNode.setAttributeNS(null, "endproductiontime", String.valueOf(apiIndustryJob.getEndProductionTime().getTime()));
+			childNode.setAttributeNS(null, "pauseproductiontime", String.valueOf(apiIndustryJob.getPauseProductionTime().getTime()));
 			node.appendChild(childNode);
 		}
 	}

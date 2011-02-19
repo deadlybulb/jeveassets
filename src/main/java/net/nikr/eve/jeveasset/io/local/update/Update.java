@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.nikr.eve.jeveasset.data.Settings;
 import net.nikr.eve.jeveasset.io.local.update.updates.Update1To2;
+import net.nikr.eve.jeveasset.io.local.update.updates.Update2To3;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -80,7 +81,7 @@ public class Update {
 				attr.setText(String.valueOf(newVersion));
 			}
 		}
-		
+
 		try {
 			FileOutputStream fos = new FileOutputStream(xml);
 			OutputFormat outformat = OutputFormat.createPrettyPrint();
@@ -109,11 +110,21 @@ public class Update {
 		try {
 			int currentVersion = getVersion(xml);
 			if (requiredVersion > currentVersion) {
-				LOG.info("Data files are out of date, updating.");
-				Update1To2 update = new Update1To2();
-				update.performUpdate();
+				LOG.info("Data files are out of date, updating. Current: "+currentVersion+" Max: "+requiredVersion);
+				if (currentVersion == 1){
+					LOG.info("Updating from 1 to 3");
+					Update1To2 update1 = new Update1To2();
+					update1.performUpdate();
+					Update2To3 update2 = new Update2To3();
+					update2.performUpdate();
+				}
+				if (currentVersion == 2){
+					LOG.info("Updating from 2 to 3");
+					Update2To3 update2 = new Update2To3();
+					update2.performUpdate();
+				
 				setVersion(new File(Settings.getPathSettings()), requiredVersion);
-			}
+				}
 		} catch (DocumentException ex) {
 			LOG.error("", ex);
 			throw new RuntimeException(ex);

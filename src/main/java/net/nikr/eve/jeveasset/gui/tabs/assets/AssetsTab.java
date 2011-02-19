@@ -53,6 +53,7 @@ import net.nikr.eve.jeveasset.gui.shared.JColumnTable;
 import net.nikr.eve.jeveasset.gui.shared.JMainTab;
 import net.nikr.eve.jeveasset.gui.shared.JMenuCopy;
 import net.nikr.eve.jeveasset.gui.shared.JMenuLookup;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableFormatAdaptor;
 import net.nikr.eve.jeveasset.i18n.TabsAssets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,14 +101,14 @@ public class AssetsTab extends JMainTab
 		eveAssetEventList = program.getEveAssetEventList();
 		//For soring the table
 		SortedList<EveAsset> sortedList = new SortedList<EveAsset>(eveAssetEventList);
-		EveAssetTableFormat eveAssetTableFormat = new EveAssetTableFormat(program.getSettings());
+		EnumTableFormatAdaptor<EveAssetTableFormat, EveAsset> tableFormat = new EnumTableFormatAdaptor<EveAssetTableFormat, EveAsset>(EveAssetTableFormat.class);
 		//For filtering the table
 		filterList = new FilterList<EveAsset>(sortedList);
 		MatcherEditorManager matcherEditorManager = new MatcherEditorManager(filterList, program);
 		//Table Model
-		eveAssetTableModel = new EventTableModel<EveAsset>(filterList, eveAssetTableFormat);
+		eveAssetTableModel = new EventTableModel<EveAsset>(filterList, tableFormat);
 		//Table
-		jTable = new JAssetTable(program, eveAssetTableModel, program.getSettings().getAssetTableSettings());
+		jTable = new JAssetTable(program, eveAssetTableModel, program.getSettings().getAssetTableSettings(), tableFormat);
 		jTable.setTableHeader( new EveAssetTableHeader(program, jTable.getColumnModel()) );
 		jTable.getTableHeader().setReorderingAllowed(true);
 		jTable.getTableHeader().setResizingAllowed(true);
@@ -115,7 +116,7 @@ public class AssetsTab extends JMainTab
 		jTable.setRowSelectionAllowed(true);
 		jTable.setColumnSelectionAllowed(true);
 		//install the sorting/filtering
-		TableComparatorChooser<EveAsset> eveAssetSorter = TableComparatorChooser.install(jTable, sortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, eveAssetTableFormat);
+		TableComparatorChooser<EveAsset> eveAssetSorter = TableComparatorChooser.install(jTable, sortedList, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE, tableFormat);
 		//Table Selection
 		EventSelectionModel<EveAsset> selectionModel = new EventSelectionModel<EveAsset>(filterList);
 		selectionModel.setSelectionMode(ListSelection.MULTIPLE_INTERVAL_SELECTION_DEFENSIVE);

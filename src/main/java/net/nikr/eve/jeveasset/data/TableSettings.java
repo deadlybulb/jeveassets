@@ -23,9 +23,10 @@ package net.nikr.eve.jeveasset.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 
 
-public class TableSettings{
+public class TableSettings<T extends Enum<T> & EnumTableColumn<Q>, Q>{
 
 	public enum ResizeMode {
 		TEXT,
@@ -33,37 +34,23 @@ public class TableSettings{
 		NONE
 	}
 
-	private final List<String> tableColumnOriginal;
-	private final List<String> tableColumnNames = new ArrayList<String>();
-	private final List<String> tableColumnVisible = new ArrayList<String>();
+	private final List<T> tableColumnOriginal;
+	private final List<T> orderColumns;
+	private final List<T> shownColumns;
 	private ResizeMode mode;
 
-	public TableSettings(List<String> tableColumnOriginal) {
+	public TableSettings(List<T> tableColumnOriginal) {
 		this(tableColumnOriginal, ResizeMode.TEXT);
 	}
 
-	public TableSettings() {
-		this(new ArrayList<String>(), ResizeMode.TEXT);
-	}
-
-	public TableSettings(ResizeMode mode) {
-		this(new ArrayList<String>(), mode);
-	}
-
-	public TableSettings(List<String> tableColumnOriginal, ResizeMode mode) {
+	public TableSettings(List<T> tableColumnOriginal, ResizeMode mode) {
 		if (tableColumnOriginal == null || mode == null){
 			throw new IllegalArgumentException("Arguments can not be null");
 		}
 		this.tableColumnOriginal = tableColumnOriginal;
+		orderColumns = new ArrayList<T>(tableColumnOriginal);
+		shownColumns = new ArrayList<T>(tableColumnOriginal);
 		this.mode = mode;
-		resetColumns();
-	}
-
-	public final void resetColumns(){
-		tableColumnNames.clear();
-		tableColumnNames.addAll(tableColumnOriginal);
-		tableColumnVisible.clear();
-		tableColumnVisible.addAll(tableColumnOriginal);
 	}
 
 	public ResizeMode getMode() {
@@ -74,22 +61,45 @@ public class TableSettings{
 		this.mode = mode;
 	}
 
-	public List<String> getTableColumnVisible() {
-		return tableColumnVisible;
+	public T getColumn(String s){
+		for (T column : tableColumnOriginal){
+			if (column.toString().equals(s)) return column;
+		}
+		return null;
 	}
 
-	public void setTableColumnVisible(List<String> tableColumnVisible) {
-		this.tableColumnVisible.clear();
-		this.tableColumnVisible.addAll(tableColumnVisible);
+	public List<T> getTableColumnVisible() {
+		return shownColumns;
 	}
 
-	public List<String> getTableColumnNames() {
-		return tableColumnNames;
+	public void setTableColumnVisible(List<T> tableColumnVisible) {
+		this.shownColumns.clear();
+		this.shownColumns.addAll(tableColumnVisible);
 	}
 
-	public void setTableColumnNames(List<String> tableColumnNames) {
-		this.tableColumnNames.clear();
-		this.tableColumnNames.addAll(tableColumnNames);
+	public List<T> getTableColumnNames() {
+		return orderColumns;
+	}
+
+	public List<EnumTableColumn> getTableColumns() {
+		List<EnumTableColumn> columns = new ArrayList<EnumTableColumn>();
+		for (T column: orderColumns){
+			columns.add(column);
+		}
+		return columns;
+	}
+
+	public List<String> getNames() {
+		List<String> columns = new ArrayList<String>();
+		for (EnumTableColumn column : orderColumns){
+			columns.add(column.getColumnName());
+		}
+		return columns;
+	}
+
+	public void setTableColumnNames(List<T> tableColumnNames) {
+		this.orderColumns.clear();
+		this.orderColumns.addAll(tableColumnNames);
 	}
 
 }
