@@ -76,10 +76,10 @@ public class CsvExportDialog extends JDialogCentered implements ActionListener{
 	private JRadioButton jAllAssets;
 	private JRadioButton jSavedFilter;
 	private JRadioButton jCurrentFilter;
-	private JComboBox jFilters;
-	private JComboBox jFieldDelimiter;
-	private JComboBox jLineDelimiter;
-	private JComboBox jDecimalSeparator;
+	private JComboBox<String> jFilters;
+	private JComboBox<FieldDelimiter> jFieldDelimiter;
+	private JComboBox<LineDelimiter> jLineDelimiter;
+	private JComboBox<DecimalSeperator> jDecimalSeparator;
 	private JMultiSelectionList jColumnSelection;
 	private JButton jOK;
 
@@ -229,17 +229,17 @@ public class CsvExportDialog extends JDialogCentered implements ActionListener{
 		jButtonGroup.add(jSavedFilter);
 		jButtonGroup.add(jCurrentFilter);
 
-		jFilters = new JComboBox();
+		jFilters = new JComboBox<String>();
 		jPanel.add(jFilters);
 		
 		JLabel jFieldDelimiterLabel = new JLabel(DialoguesCsvExport.get().fieldTerminated());
-		jFieldDelimiter = new JComboBox( FieldDelimiter.values() ); //new String[]{"Comma", "Semicolon"} );
+		jFieldDelimiter = new JComboBox<FieldDelimiter>( FieldDelimiter.values() ); //new String[]{"Comma", "Semicolon"} );
 
 		JLabel jLineDelimiterLabel = new JLabel(DialoguesCsvExport.get().linesTerminated());
-		jLineDelimiter = new JComboBox( LineDelimiter.values() ); //new String[]{"\\n", "\\r\\n", "\\r"});
+		jLineDelimiter = new JComboBox<LineDelimiter>( LineDelimiter.values() ); //new String[]{"\\n", "\\r\\n", "\\r"});
 
 		JLabel jDecimalSeparatorLabel = new JLabel(DialoguesCsvExport.get().decimalSeperator());
-		jDecimalSeparator = new JComboBox( DecimalSeperator.values() ); // new String[]{"Dot", "Comma"});
+		jDecimalSeparator = new JComboBox<DecimalSeperator>( DecimalSeperator.values() ); // new String[]{"Dot", "Comma"});
 
 		JLabel jColumnSelectionLabel = new JLabel(DialoguesCsvExport.get().columns());
 		jColumnSelection = new JMultiSelectionList( new Vector<String>(program.getSettings().getAssetTableSettings().getTableColumnNames()) );
@@ -502,7 +502,7 @@ public class CsvExportDialog extends JDialogCentered implements ActionListener{
 		if (b){
 			Vector<String> assetFilters = new Vector<String>(program.getSettings().getAssetFilters().keySet());
 			Collections.sort(assetFilters);
-			jFilters.setModel( new DefaultComboBoxModel(assetFilters) );
+			jFilters.setModel( new DefaultComboBoxModel<String>(assetFilters) );
 			jFilters.setEnabled(false);
 
 			if(assetFilters.isEmpty()){

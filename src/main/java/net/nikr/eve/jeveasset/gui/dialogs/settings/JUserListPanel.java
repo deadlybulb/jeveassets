@@ -46,7 +46,7 @@ public abstract class JUserListPanel<K, V extends Comparable<V>> extends JSettin
 	public final static String ACTION_DELETE = "ACTION_DELETE";
 	public final static String ACTION_EDIT = "ACTION_EDIT";
 
-	private JComboBox jItems;
+	private JComboBox<UserItem> jItems;
 	private JButton jEdit;
 	private JButton jDelete;
 
@@ -60,7 +60,7 @@ public abstract class JUserListPanel<K, V extends Comparable<V>> extends JSettin
 
 		ListenerClass listener = new ListenerClass();
 
-		jItems = new JComboBox();
+		jItems = new JComboBox<UserItem>();
 
 		jEdit = new JButton("Edit");
 		jEdit.setActionCommand(ACTION_EDIT);
@@ -163,12 +163,12 @@ public abstract class JUserListPanel<K, V extends Comparable<V>> extends JSettin
 	private void updateGUI(){
 		if (items.isEmpty()){
 			setEnabledAll(false);
-			jItems.setModel( new DefaultComboBoxModel() );
+			jItems.setModel( new DefaultComboBoxModel<UserItem>() );
 			jItems.getModel().setSelectedItem("Empty");
 		} else {
 			setEnabledAll(true);
 			Collections.sort(listItems);
-			jItems.setModel( new DefaultComboBoxModel(listItems.toArray()) );
+			jItems.setModel( new DefaultComboBoxModel<UserItem>(listItems.toArray(new UserItem[listItems.size()])) );
 		}
 	}
 

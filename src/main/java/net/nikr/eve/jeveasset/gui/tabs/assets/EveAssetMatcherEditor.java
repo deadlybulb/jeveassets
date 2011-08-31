@@ -52,10 +52,10 @@ public class EveAssetMatcherEditor extends AbstractMatcherEditor<EveAsset>{
 	private final static String ACTION_ENABLED = "ACTION_ENABLED";
 
 	private JCheckBox jEnabled;
-	private JComboBox jAnd;
-	private JComboBox jColumn;
-	private JComboBox jMode;
-	private JComboBox jMatchColumn;
+	private JComboBox<AssetFilter.Junction> jAnd;
+	private JComboBox<String> jColumn;
+	private JComboBox<AssetFilter.Mode> jMode;
+	private JComboBox<String> jMatchColumn;
 	private JTextField jText;
 	private Program program;
 	private FilterPanel filterPanel;
@@ -79,20 +79,20 @@ public class EveAssetMatcherEditor extends AbstractMatcherEditor<EveAsset>{
 		jEnabled.setActionCommand(ACTION_ENABLED);
 		jEnabled.addActionListener(listener);
 
-		jAnd = new JComboBox(new Object[] {AssetFilter.Junction.AND, AssetFilter.Junction.OR});
+		jAnd = new JComboBox<AssetFilter.Junction>(AssetFilter.Junction.values());
 		jAnd.addActionListener(listener);
 
 		List<String> columns = new ArrayList<String>();
 		columns.add("All");
 		columns.addAll( program.getSettings().getAssetTableSettings().getTableColumnNames() );
-		jColumn = new JComboBox(columns.toArray());
+		//Collections.
+		jColumn = new JComboBox<String>(columns.toArray(new String[columns.size()]));
 		jColumn.setActionCommand(ACTION_COLUMN_SELECTED);
 		jColumn.addActionListener(listener);
-
-		jMatchColumn = new JComboBox( program.getSettings().getAssetTableNumberColumns().toArray() );
+		jMatchColumn = new JComboBox<String>( program.getSettings().getAssetTableNumberColumns().toArray(new String[program.getSettings().getAssetTableNumberColumns().size()]) );
 		jMatchColumn.addActionListener(listener);
 
-		jMode = new JComboBox(new Object[] {AssetFilter.Mode.MODE_CONTAIN,
+		jMode = new JComboBox<AssetFilter.Mode>(new AssetFilter.Mode[] {AssetFilter.Mode.MODE_CONTAIN,
 											AssetFilter.Mode.MODE_CONTAIN_NOT,
 											AssetFilter.Mode.MODE_EQUALS,
 											AssetFilter.Mode.MODE_EQUALS_NOT
@@ -120,19 +120,19 @@ public class EveAssetMatcherEditor extends AbstractMatcherEditor<EveAsset>{
 		return (jText.getText().equals("") && !columnCompare) || !jEnabled.isSelected();
 	}
 
-	public JComboBox getAnd() {
+	public JComboBox<AssetFilter.Junction> getAnd() {
 		return jAnd;
 	}
 
-	public JComboBox getMode() {
+	public JComboBox<AssetFilter.Mode> getMode() {
 		return jMode;
 	}
 
-	public JComboBox getColumn() {
+	public JComboBox<String> getColumn() {
 		return jColumn;
 	}
 
-	public JComboBox getMatchColumn() {
+	public JComboBox<String> getMatchColumn() {
 		return jMatchColumn;
 	}
 
@@ -163,20 +163,11 @@ public class EveAssetMatcherEditor extends AbstractMatcherEditor<EveAsset>{
 				String column = (String) jColumn.getSelectedItem();
 				int index = jMode.getSelectedIndex();
 				if (program.getSettings().getAssetTableNumberColumns().contains(column)){
-					jMode.setModel( new DefaultComboBoxModel(
-							new Object[] {AssetFilter.Mode.MODE_CONTAIN,
-										  AssetFilter.Mode.MODE_CONTAIN_NOT,
-										  AssetFilter.Mode.MODE_EQUALS,
-										  AssetFilter.Mode.MODE_EQUALS_NOT,
-										  AssetFilter.Mode.MODE_GREATER_THAN,
-										  AssetFilter.Mode.MODE_LESS_THAN,
-										  AssetFilter.Mode.MODE_GREATER_THAN_COLUMN,
-										  AssetFilter.Mode.MODE_LESS_THAN_COLUMN
-					}) );
+					jMode.setModel( new DefaultComboBoxModel<AssetFilter.Mode>(AssetFilter.Mode.values()) );
 					jMode.setSelectedIndex(index);
 				} else {
-					jMode.setModel( new DefaultComboBoxModel(
-							new Object[] {AssetFilter.Mode.MODE_CONTAIN,
+					jMode.setModel( new DefaultComboBoxModel<AssetFilter.Mode>(
+							new AssetFilter.Mode[] {AssetFilter.Mode.MODE_CONTAIN,
 										  AssetFilter.Mode.MODE_CONTAIN_NOT,
 										  AssetFilter.Mode.MODE_EQUALS,
 										  AssetFilter.Mode.MODE_EQUALS_NOT

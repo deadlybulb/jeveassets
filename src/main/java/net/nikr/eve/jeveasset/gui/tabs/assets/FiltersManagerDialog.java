@@ -52,8 +52,8 @@ public class FiltersManagerDialog extends JDialogCentered {
 	public final static String ACTION_DELETE_FILTER = "ACTION_DELETE_FILTER";
 
 	//GUI
-	private DefaultListModel listModel;
-	private JList jFilters;
+	private DefaultListModel<String> listModel;
+	private JList<String> jFilters;
 	private JButton jDelete;
 	private JButton jLoad;
 	private JButton jRename;
@@ -84,8 +84,8 @@ public class FiltersManagerDialog extends JDialogCentered {
 
 
 		//List
-		listModel = new DefaultListModel();
-		jFilters = new JList(listModel);
+		listModel = new DefaultListModel<String>();
+		jFilters = new JList<String>(listModel);
 		jFilters.addMouseListener(listener);
 		jFilters.addListSelectionListener(listener);
 		JScrollPane jScrollPanel = new JScrollPane(jFilters);
@@ -205,8 +205,8 @@ public class FiltersManagerDialog extends JDialogCentered {
 		}
 		if (bOK){
 			List<AssetFilter> assetFilters = new ArrayList<AssetFilter>();
-			for (Object obj : jFilters.getSelectedValues()){
-				for (AssetFilter assetFilter : program.getSettings().getAssetFilters().get( (String)obj )){
+			for (String filter : jFilters.getSelectedValuesList()){
+				for (AssetFilter assetFilter : program.getSettings().getAssetFilters().get(filter)){
 					if (!assetFilters.contains(assetFilter)) assetFilters.add(assetFilter);
 				}
 			}
