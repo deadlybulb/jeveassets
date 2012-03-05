@@ -92,9 +92,9 @@ public class HumansGetter extends AbstractApiGetter<ApiKeyInfoResponse> {
 		for (EveCharacter apiCharacter : characters){
 			boolean found = false;
 			for (Human human : getAccount().getHumans()){
-				if ( (human.getOwnerID() == apiCharacter.getCharacterID() || human.getOwnerID() == apiCharacter.getCorporationID()) && !typeChanged){
+				if ( (human.getCharacterID() == apiCharacter.getCharacterID() || human.getCharacterID() == apiCharacter.getCorporationID()) && !typeChanged){
 					human.setName(getName(apiCharacter));
-					human.setOwnerID(getID(apiCharacter));
+					human.setCharacterID(getID(apiCharacter));
 					humans.add(human);
 					found = true;
 					break;

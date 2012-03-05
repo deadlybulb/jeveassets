@@ -29,7 +29,7 @@ import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.i18n.TabsOrders;
 
 
-public enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
+enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 	NAME(String.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {
@@ -164,15 +164,6 @@ public enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 	@Override
 	public Comparator getComparator() {
 		return comparator;
-	}
-	//XXX - Strange workaround >_<
-	@Override
-	public Object getColumnValue(MarketOrder from) {
-		return getColumnValue(from);
-	}
-	@Override
-	public String toString() {
-		return getColumnName();
 	}
 	@Override public boolean isColumnEditable(Object baseObject) {
 		return false;
