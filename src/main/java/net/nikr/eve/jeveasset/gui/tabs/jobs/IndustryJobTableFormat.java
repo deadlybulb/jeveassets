@@ -29,7 +29,7 @@ import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.i18n.TabsJobs;
 
 
-enum IndustryJobTableFormat implements EnumTableColumn<IndustryJob> {
+public enum IndustryJobTableFormat implements EnumTableColumn<IndustryJob> {
 	//XXX Removed extra id columns from IndustryJobTableFormat (Industry Plot Releated?)
 	/*
 	JOB_ID(String.class, GlazedLists.comparableComparator()) {
@@ -105,6 +105,16 @@ enum IndustryJobTableFormat implements EnumTableColumn<IndustryJob> {
 			return from.getName();
 		}
 	},
+	OWNER(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsJobs.get().columnOwner();
+		}
+		@Override
+		public Object getColumnValue(IndustryJob from) {
+			return from.getOwner();
+		}
+	},
 	LOCATION(String.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {
@@ -115,14 +125,14 @@ enum IndustryJobTableFormat implements EnumTableColumn<IndustryJob> {
 			return from.getLocation();
 		}
 	},
-	OWNER(String.class, GlazedLists.comparableComparator()) {
+	REGION(String.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {
-			return TabsJobs.get().columnOwner();
+			return TabsJobs.get().columnRegion();
 		}
 		@Override
 		public Object getColumnValue(IndustryJob from) {
-			return from.getOwner();
+			return from.getRegion();
 		}
 	},
 	INSTALL_DATE(Date.class, GlazedLists.comparableComparator()) {
@@ -138,7 +148,7 @@ enum IndustryJobTableFormat implements EnumTableColumn<IndustryJob> {
 	START_DATE(Date.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {
-			return "Start Date";
+			return TabsJobs.get().columnStartDate();
 		}
 		@Override
 		public Object getColumnValue(IndustryJob from) {
@@ -190,6 +200,15 @@ enum IndustryJobTableFormat implements EnumTableColumn<IndustryJob> {
 	@Override
 	public Comparator getComparator() {
 		return comparator;
+	}
+	//XXX - Strange workaround >_<
+	@Override
+	public Object getColumnValue(IndustryJob from) {
+		return getColumnValue(from);
+	}
+	@Override
+	public String toString() {
+		return getColumnName();
 	}
 	@Override public boolean isColumnEditable(Object baseObject) {
 		return false;

@@ -38,20 +38,19 @@ public abstract class TabsJobs extends Bundle {
 		super(locale);
 	}
 
-	public abstract String activity();
-	public abstract String character();
 	public abstract String all();
 	public abstract String industry();
 	public abstract String install();
 	public abstract String no();
-	public abstract String state();
 	public abstract String whitespace(Object arg0);
 	public abstract String columnState();
 	public abstract String columnActivity();
 	public abstract String columnName();
-	public abstract String columnLocation();
 	public abstract String columnOwner();
+	public abstract String columnLocation();
+	public abstract String columnRegion();
 	public abstract String columnInstallDate();
+	public abstract String columnStartDate();
 	public abstract String columnEndDate();
 	public abstract String columnBpMe();
 	public abstract String columnBpPe();

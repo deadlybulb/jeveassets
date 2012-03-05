@@ -29,7 +29,7 @@ import net.nikr.eve.jeveasset.gui.shared.table.EnumTableColumn;
 import net.nikr.eve.jeveasset.i18n.TabsOrders;
 
 
-enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
+public enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 	NAME(String.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {
@@ -58,6 +58,16 @@ enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 		@Override
 		public Object getColumnValue(MarketOrder from) {
 			return from.getPrice();
+		}
+	},
+	ISSUED(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsOrders.get().columnIssued();
+		}
+		@Override
+		public Object getColumnValue(MarketOrder from) {
+			return from.getIssuedFormatted();
 		}
 	},
 	EXPIRES_IN(String.class, GlazedLists.comparableComparator()) {
@@ -100,6 +110,16 @@ enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 			return from.getMinVolume();
 		}
 	},
+	OWNER(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsOrders.get().columnOwner();
+		}
+		@Override
+		public Object getColumnValue(MarketOrder from) {
+			return from.getOwner();
+		}
+	},
 	LOCATION(String.class, GlazedLists.comparableComparator()) {
 		@Override
 		public String getColumnName() {
@@ -108,6 +128,16 @@ enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 		@Override
 		public Object getColumnValue(MarketOrder from) {
 			return from.getLocation();
+		}
+	},
+	REGION(String.class, GlazedLists.comparableComparator()) {
+		@Override
+		public String getColumnName() {
+			return TabsOrders.get().columnRegion();
+		}
+		@Override
+		public Object getColumnValue(MarketOrder from) {
+			return from.getRegion();
 		}
 	},
 	VALUE(Double.class, GlazedLists.comparableComparator()) {
@@ -134,6 +164,15 @@ enum MarketTableFormat implements EnumTableColumn<MarketOrder> {
 	@Override
 	public Comparator getComparator() {
 		return comparator;
+	}
+	//XXX - Strange workaround >_<
+	@Override
+	public Object getColumnValue(MarketOrder from) {
+		return getColumnValue(from);
+	}
+	@Override
+	public String toString() {
+		return getColumnName();
 	}
 	@Override public boolean isColumnEditable(Object baseObject) {
 		return false;

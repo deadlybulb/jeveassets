@@ -286,7 +286,7 @@ public class StockpileDialog extends JDialogCentered implements ActionListener, 
 		String container = (String)jContainer.getSelectedItem();
 		//Add
 		
-		return new Stockpile(name, human.getCharacterID(), location.getLocationID(), station, system, region, flag.getFlagID(), container, jInventory.isSelected(), jSellOrders.isSelected(), jBuyOrders.isSelected(), jJobs.isSelected());
+		return new Stockpile(name, human.getOwnerID(), human.getName(), location.getLocationID(), station, system, region, flag.getFlagID(), container, jInventory.isSelected(), jSellOrders.isSelected(), jBuyOrders.isSelected(), jJobs.isSelected());
 	}
 	
 	private void autoValidate(){
@@ -325,7 +325,7 @@ public class StockpileDialog extends JDialogCentered implements ActionListener, 
 		Human humanSelected = humanAll;
 		for (Account account : program.getSettings().getAccounts()){
 			for (Human human : account.getHumans()){
-				if (human.getCharacterID() == stockpile.getCharacterID()){
+				if (human.getOwnerID() == stockpile.getOwnerID()){
 					humanSelected = human;
 				}
 			}
@@ -452,7 +452,7 @@ public class StockpileDialog extends JDialogCentered implements ActionListener, 
 		Human humanSelected = humanAll;
 		for (Account account : program.getSettings().getAccounts()){
 			for (Human human : account.getHumans()){
-				if (human.getCharacterID() == stockpile.getCharacterID()){
+				if (human.getOwnerID() == stockpile.getOwnerID()){
 					humanSelected = human;
 				}
 			}
@@ -581,7 +581,7 @@ public class StockpileDialog extends JDialogCentered implements ActionListener, 
 						myLocations.add(industryJob.getRegion());
 					}
 				}
-				List<MarketOrder> marketOrders = ApiConverter.apiMarketOrdersToMarketOrders(human.getMarketOrders(), program.getSettings());
+				List<MarketOrder> marketOrders = ApiConverter.apiMarketOrdersToMarketOrders(human, human.getMarketOrders(), program.getSettings());
 				for (MarketOrder marketOrder : marketOrders){
 					if (!myLocations.contains(marketOrder.getLocation())){
 						myLocations.add(marketOrder.getLocation());

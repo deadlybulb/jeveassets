@@ -30,35 +30,17 @@ import com.beimin.eveapi.shared.marketorders.ApiMarketOrder;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.SocketAddress;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 import net.nikr.eve.jeveasset.Program;
 import net.nikr.eve.jeveasset.SplashUpdater;
 import net.nikr.eve.jeveasset.data.model.Galaxy;
+import net.nikr.eve.jeveasset.gui.shared.filter.Filter;
 import net.nikr.eve.jeveasset.gui.tabs.stockpile.Stockpile;
 import net.nikr.eve.jeveasset.gui.tabs.stockpile.Stockpile.StockpileItem;
-import net.nikr.eve.jeveasset.io.local.AssetsReader;
-import net.nikr.eve.jeveasset.io.local.AssetsWriter;
-import net.nikr.eve.jeveasset.io.local.ConquerableStationsReader;
-import net.nikr.eve.jeveasset.io.local.FlagsReader;
-import net.nikr.eve.jeveasset.io.local.ItemsReader;
-import net.nikr.eve.jeveasset.io.local.JumpsReader;
-import net.nikr.eve.jeveasset.io.local.LocationsReader;
-import net.nikr.eve.jeveasset.io.local.ProfileReader;
-import net.nikr.eve.jeveasset.io.local.SettingsReader;
-import net.nikr.eve.jeveasset.io.local.SettingsWriter;
+import net.nikr.eve.jeveasset.io.local.*;
 import net.nikr.eve.jeveasset.io.online.PriceDataGetter;
 import net.nikr.eve.jeveasset.io.shared.ApiConverter;
 import net.nikr.eve.jeveasset.io.shared.ApiIdConverter;
@@ -137,6 +119,10 @@ public class Settings{
 	private PriceDataGetter priceDataGetter = new PriceDataGetter(this);
 	private CsvSettings csvSettings;
 	
+	private final Map<String, List<Filter>> MarketOrdersFilters = new HashMap<String, List<Filter>>();
+	private final Map<String, List<Filter>> IndustryJobsFilters = new HashMap<String, List<Filter>>();
+	private final Map<String, List<Filter>> StockpileFilters = new HashMap<String, List<Filter>>();
+	
 	public Settings() {
 		SplashUpdater.setProgress(5);
 		priceDatas = new HashMap<Integer, PriceData>();
@@ -200,14 +186,12 @@ public class Settings{
 
 		//To add new column also update:
 		//		gui.tabs.assets.EveAssetTableFormat.getColumnClass()
-		//		gui.tabs.assets.EveAssetTableFormat.getColumnComparator()
 		//		gui.tabs.assets.EveAssetTableFormat.getColumnValue()
 		//		gui.shared.EveAssetMatching.getString()
-		//		gui.shared.EveAssetMatching.getDouble()
 		//			remember to add to "All" as well...
 		//		gui.dialogs.export.CsvExportDialog.getLine()
 		//	If number column:
-		//		add to mainTableNumberColumns bellow
+		//		add to assetTableColumns bellow
 		assetTableColumns.add("Name");
 		assetTableColumns.add("Group");
 		assetTableColumns.add("Category");
@@ -228,8 +212,9 @@ public class Settings{
 		assetTableColumns.add("Type Count");
 		assetTableColumns.add("Meta");
 		assetTableColumns.add("Volume");
+		assetTableColumns.add("Total Volume");
 		assetTableColumns.add("Singleton");
-		assetTableColumns.add("ID");
+		assetTableColumns.add("Item ID");
 		assetTableColumns.add("Type ID");
 
 		tableSettings.put(COLUMN_SETTINGS_ASSETS, new TableSettings(assetTableColumns));
@@ -242,9 +227,10 @@ public class Settings{
 		assetTableColumnTooltips.put("Reprocessed", "Value reprocessed materials");
 		assetTableColumnTooltips.put("Reprocessed Value", "Reprocessed Value (Count*Reprocessed)");
 		assetTableColumnTooltips.put("Value", "Value (Count*Price)");
+		assetTableColumnTooltips.put("Total Volume", "Total Volume (Count*Volume)");
 		assetTableColumnTooltips.put("Type Count", "Type Count (all assets of this type)");
 		assetTableColumnTooltips.put("Meta", "Meta Level");
-		assetTableColumnTooltips.put("ID", "ID (this specific asset)");
+		assetTableColumnTooltips.put("Item ID", "Item ID (this specific asset)");
 		assetTableColumnTooltips.put("Type ID", "Type ID (this type of asset)");
 
 		assetTableNumberColumns = new ArrayList<String>();
@@ -760,6 +746,18 @@ public class Settings{
 
 	public Map<String, TableSettings> getTableSettings() {
 		return tableSettings;
+	}
+
+	public Map<String, List<Filter>> getIndustryJobsFilters() {
+		return IndustryJobsFilters;
+	}
+
+	public Map<String, List<Filter>> getMarketOrdersFilters() {
+		return MarketOrdersFilters;
+	}
+
+	public Map<String, List<Filter>> getStockpileFilters() {
+		return StockpileFilters;
 	}
 
 	public TableSettings getAssetTableSettings(){
